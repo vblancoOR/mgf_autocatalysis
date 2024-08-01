@@ -488,12 +488,14 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
             name = "name2")
         # --------- 3
         print("*****", reactions)
+        for s in species:
+            print("sp ", s, "--",input_matrix[s,:])
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r, tt] 
                          for r in reactions) 
             >= 1
-            for s in species),
-            name = "name3")
+            for s in species if sum(abs(input_matrix[s,r]) for r in reactions)>0.01),
+            name = "name3a")
         # --------- 4
         m.addConstrs(
             (y[s, t] <= gb.quicksum(z[r, t] 
@@ -768,12 +770,14 @@ def growthRateFoodWaste(output_matrix, input_matrix, t_max, number_periods):
                     for s in species),
             name = "name2")
         # --------- 3
+        for s in species:
+            print("sp ", s, "--",input_matrix[s,:])
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r, tt] 
                          for r in reactions) 
             >= 1
-            for s in species),
-            name = "name3")
+            for s in species if sum(abs(input_matrix[s,r]) for r in reactions)>0.01),
+            name = "name3b")
         # --------- 4
         m.addConstrs(
             (y[s, t] <= gb.quicksum(z[r, t] 
