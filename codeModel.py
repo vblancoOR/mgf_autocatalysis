@@ -26,12 +26,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     reactions = range(number_reactions)
     # Alpha_0 (float)
     x_0 = np.ones(number_reactions)
-    # alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
-    #                      for r in reactions)
-    #                  /
-    #                  sum(input_matrix[s, r] * x_0[r] 
-    #                      for r in reactions) 
-    #                  for s in species])
+    #
     vector = []
     for s in species:
         numerador = sum(output_matrix[s, r] * x_0[r] 
@@ -42,12 +37,8 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
             denominador = 0.00000000000001
         ayuda = numerador/denominador
         vector.append(ayuda)
-        
     alpha_0 = np.min(vector)
-            
-
     # --------------------------------------
-
     # =========================================================================
     def modelGrowthRateFixed(previous_alpha):
     
@@ -74,24 +65,19 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     
         # Constraints
         # --------------------------------------
-        # 
-        print(number_species)
-        print([r for r in reactions])
-        print([s for s in species])
-        print(output_matrix.shape)
-        
+        #
         m.addConstrs(
             (alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
                                   for r in reactions) 
-                     - previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
+                      - previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
                                             for r in reactions)
-                     for s in species), "x")
+                      for s in species), "restriccion_1")
         #
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r] 
-                         for r in reactions) 
-             >= 1 
-             for s in species), "y")
+                          for r in reactions) 
+              >= 1 
+              for s in species), "restriccion_2")
         # --------------------------------------
     
         # Gurobi parameters
@@ -109,26 +95,26 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     
         # Result
         # --------------------------------------
-        # print('xxxxxxxxxxxxxx')
-        # print(m.status)
-        # m.Params.DualReductions = 0
-        # m.optimize()
-        # print(m.status)
+        if m.status != 2:
+            # st=0
+            m.computeIIS()
+            
+            IISfile="simpler_inf2.ILP"
+            m.write(IISfile)
+                
+            print("INFEASIBLE!!!!!")
+            with open(IISfile) as f: 
+                for line in f: 
+                    print(line.strip())
+    
+            return [], []
+        else:
+            xsol = np.array([x[r].x for r in reactions])
+            alphasol = alpha.x
 
-        # all_vars = m.getVars()
-        # values = m.getAttr("X", all_vars)
-        # names = m.getAttr("VarName", all_vars)
-        
-        # for name, val in zip(names, values):
-        #     print(f"{name} = {val}")
-
-        # print('xxxxxxxxxxxxxx')
-        
-        xsol = np.array([x[r].x for r in reactions])
-        alphasol = alpha.x
+            return xsol, alphasol
         # --------------------------------------
     
-        return xsol, alphasol
     # =========================================================================
 
     # Initialize algorithm
@@ -140,41 +126,37 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     alpha_t = alpha_0
     # --------------------------------------
 
-
     while stop == False:
         # Solve model
         x_t, alphabar = modelGrowthRateFixed(previous_alpha)
         # In case alphabar too little or number of steps larger than maximum,
         # stop
+        vector = []
+        for s in species:
+            numerador = sum(output_matrix[s, r] * x_t[r] 
+                            for r in reactions)
+            denominador = sum(input_matrix[s, r] * x_t[r] 
+                              for r in reactions)
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            vector.append(ayuda)
+            
+        alpha_t = np.min(vector)
+    
         if (np.abs(alphabar) < 0.00000001 or
             step > max_steps):
             stop = True
-            alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
-                                 for r in reactions)
-                             /
-                             sum(input_matrix[s, r] * x_t[r]
-                                 for r in reactions) 
-                             for s in species])
+            
             alphaDict[step] = alpha_t
             return x_t, alpha_t, step, alphaDict
         # Otherwise iterate
-        else:
-            alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
-                                 for r in reactions)
-                             /
-                             sum(input_matrix[s, r] * x_t[r] 
-                                 for r in reactions) 
-                             for s in species])
+        else:               
             alphaDict[step] = alpha_t
             # Initialize next step
             step += 1
             previous_alpha = alpha_t
-
 # =============================================================================
-
-
-
-
 
 
 # =============================================================================
@@ -194,12 +176,19 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     reactions = range(number_reactions)
     # Alpha_0 (float)
     x_0 = np.ones(number_reactions)
-    alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
-                         for r in reactions)
-                     /
-                     sum(input_matrix[s, r] * x_0[r] 
-                         for r in reactions) 
-                     for s in species])
+
+    vector = []
+    for s in species:
+        numerador = sum(output_matrix[s, r] * x_0[r] 
+                        for r in reactions)
+        denominador = sum(input_matrix[s, r] * x_0[r] 
+                          for r in reactions)
+        if denominador == 0.0:
+            denominador = 0.00000000000001
+        ayuda = numerador/denominador
+        vector.append(ayuda)
+        
+    alpha_0 = np.min(vector)
     # --------------------------------------
     
     # =========================================================================
@@ -244,7 +233,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         # --------------------------------------      
         m.setObjective(alpha, gb.GRB.MAXIMIZE)
         # --------------------------------------      
-    
+
         # Constraints
         # --------------------------------------
         #
@@ -256,21 +245,20 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
                                            for r in reactions) 
                     for s in species),
             name = "name1")
-        
         #
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r] 
                          for r in reactions) 
             >= 1
-            for s in species),
+            for s in species if sum(abs(input_matrix[s,r]) for r in reactions)>0.01),
             name = "name2")
         #
         m.addConstrs(
             (y[s] <= gb.quicksum(z[r] 
-                                 for r in reactions 
-                                 if (output_matrix[s, r] > 0 
-                                     or input_matrix[s, r] > 0)) 
-             for s in species), 
+                                  for r in reactions 
+                                  if (output_matrix[s, r] > 0 
+                                      or input_matrix[s, r] > 0)) 
+              for s in species), 
             name = "name3")
         #
         m.addConstrs(
@@ -332,17 +320,17 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         # --------------------------------------
         if m.status != gb.GRB.OPTIMAL:
             # st=0
-            model.computeIIS()
+            m.computeIIS()
             
-            IISfile="inf2.ILP"
-            model.write(IISfile)
+            IISfile="Subgraph_inf2.ILP"
+            m.write(IISfile)
                 
             print("INFEASIBLE!!!!!")
             with open(IISfile) as f: 
                 for line in f: 
                     print(line.strip())
     
-            return [], 0, [], [], []
+            return [], [], [], [], []
         else:
             xsol = np.array([x[r].x for r in reactions])
             alphasol = alpha.x
@@ -356,16 +344,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
             return xsol, alphasol, asol, ysol, zsol
         # --------------------------------------
     # =========================================================================
-
-    # x0, a0, y0, z0 = modelGrowthRateFixedCase0()
-    
-    # if len(x0) >= 1:
-    #     alpha0 = np.min([sum(output_matrix[s, r] * x0[r] 
-    #                          for r in reactions)/
-    #                      sum(input_matrix[s, r] * x0[r] 
-    #                          for r in reactions) 
-    #                      for s in a0])
-        
+       
     stop = False
     step = 0
     alphaDict = {}
@@ -373,15 +352,43 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     alpha = alpha_0
     while stop == False:
             
-
         xx, alphabar, aa, yy, zz = modelGrowthRateFixed(alpha)
-        alpha = np.min([sum(output_matrix[s, r] * xx[r] 
-                        for r in reactions)
-                        /
-                        sum(input_matrix[s, r] * xx[r] 
-                        for r in reactions) 
-                    for s in aa])
-            
+
+        # ---------------------------------
+        vector = []
+        for s in species:
+            numerador = sum(output_matrix[s, r] * xx[r] 
+                            for r in reactions)
+            denominador = sum(input_matrix[s, r] * xx[r] 
+                              for r in reactions)
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            if ayuda != 0:
+                vector.append(ayuda)
+        alpha_v1 = np.min(vector)
+        # ---------------------------------
+        # ---------------------------------
+        vector = []
+        for a in aa:
+            numerador = sum(output_matrix[a, z] * xx[z] 
+                            for z in zz)
+            denominador = sum(input_matrix[a, z] * xx[z] 
+                              for z in zz)
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            vector.append(ayuda)
+        alpha_v2 = np.min(vector)
+        # ---------------------------------
+
+        print('xxxxxxxxxxxxxxxxxxxxxxx')
+        print('alpha_v1:' + str(alpha_v1))
+        print('alpha_v2:' + str(alpha_v2))
+        print("El escenario s20_r20_v0 da resultados distintos.")
+        print('xxxxxxxxxxxxxxxxxxxxxxx')
+        alpha = alpha_v2
+
         if (len(aa) < 1 or 
             (np.abs(alphabar) < 0.00000001 or 
              step > t_max)):
@@ -416,13 +423,19 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
     periods = range(number_periods)
     # Alpha_0 (float)
     x_0 = np.ones(number_reactions)
-    alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
-                         for r in reactions)
-                     /
-                     sum(input_matrix[s, r] * x_0[r] 
-                         for r in reactions) 
-                     for s in species])
-    # alpha_0 = [alpha_0 for i in periods]
+    #
+    vector = []
+    for s in species:
+        numerador = sum(output_matrix[s, r] * x_0[r] 
+                        for r in reactions)
+        denominador = sum(input_matrix[s, r] * x_0[r] 
+                          for r in reactions)
+        if denominador == 0.0:
+            denominador = 0.00000000000001
+        ayuda = numerador/denominador
+        vector.append(ayuda)
+        
+    alpha_0 = np.min(vector)
     # --------------------------------------
     
     
@@ -487,9 +500,6 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
                     for s in species),
             name = "name2")
         # --------- 3
-        print("*****", reactions)
-        for s in species:
-            print("sp ", s, "--",input_matrix[s,:])
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r, tt] 
                          for r in reactions) 
@@ -622,12 +632,6 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
                     for t in periods
                     if a[s, t].x > 0]
             
-            # imprime = [a[s, t].x 
-            #         for s in species
-            #         for t in periods]
-            
-            # print(imprime)
-            
             ysol = [(s, t) 
                     for s in species
                     for t in periods
@@ -648,18 +652,73 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
     alpha = alpha_0
     while stop == False:
         xx, alphabar, aa, yy, zz = growthRateWithTimeFixed(alpha)
-        alpha = np.min([sum(output_matrix[s, r] * xx[r, periods[-1]] 
-                        for r in reactions)
-                        /
-                        sum(input_matrix[s, r] * xx[r, periods[-1]] 
-                        for r in reactions) 
-                    for s in aa])
-        # print(aa)
-        # print('-------------')
-        # print(alphabar)
+        
+        # -------------------------
+        vector = []
+        for s in species:
+            numerador = sum(output_matrix[s, r] * xx[r, periods[-1]] 
+                            for r in reactions)
+            denominador = sum(input_matrix[s, r] * xx[r, periods[-1]] 
+                              for r in reactions)
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            if ayuda != 0:
+                vector.append(ayuda)
+            
+        alpha_v1 = np.min(vector)
+        # -------------------------
+
+               
+        # -------------------------
+        vector = []
+        for a in aa:
+            numerador = sum(output_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                            for z in zz if z[1] == periods[-1] 
+                            and a[1] == periods[-1])
+            denominador = sum(input_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                              for z in zz if z[1] == periods[-1]
+                              and a[1] == periods[-1])
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            vector.append(ayuda)
+            
+        alpha_v2 = np.min(vector)
+        # ------------------------- 
+
+        # -------------------------
+        vector = []
+        for a in aa:
+            numerador = sum(output_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                            for z in zz if z[1] == periods[-1] 
+                            and a[1] == periods[-1])
+            denominador = sum(input_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                              for z in zz if z[1] == periods[-1]
+                              and a[1] == periods[-1])
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            if ayuda != 0:
+                vector.append(ayuda)
+            
+        alpha_v3 = np.min(vector)
+        # -------------------------
+
+        alpha = alpha_v1
+
         if (len(aa) < 1 or 
             (np.abs(alphabar) < 0.00000001 or 
              step > t_max)):
+            
+            print('xxxxxxxxxxxxxxxxxxxxxxx')
+            print('alpha_v1:' + str(alpha_v1))
+            print('alpha_v2:' + str(alpha_v2))
+            print('alpha_v3:' + str(alpha_v3))
+            print("Creo que la forma correcta de calcular")
+            print("alfa es la 2 pero es la que no funciona")
+            print('xxxxxxxxxxxxxxxxxxxxxxx')
+            
             stop = True
             alphaDict[step] = alpha
             return xx, alpha, step, alphaDict, alphabar, aa, yy, zz
@@ -688,12 +747,19 @@ def growthRateFoodWaste(output_matrix, input_matrix, t_max, number_periods):
     periods = range(number_periods)
     # Alpha_0 (float)
     x_0 = np.ones(number_reactions)
-    alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
-                         for r in reactions)
-                     /
-                     sum(input_matrix[s, r] * x_0[r] 
-                         for r in reactions) 
-                     for s in species])
+    #
+    vector = []
+    for s in species:
+        numerador = sum(output_matrix[s, r] * x_0[r] 
+                        for r in reactions)
+        denominador = sum(input_matrix[s, r] * x_0[r] 
+                          for r in reactions)
+        if denominador == 0.0:
+            denominador = 0.00000000000001
+        ayuda = numerador/denominador
+        vector.append(ayuda)
+        
+    alpha_0 = np.min(vector)
     # --------------------------------------
     
     
@@ -770,14 +836,14 @@ def growthRateFoodWaste(output_matrix, input_matrix, t_max, number_periods):
                     for s in species),
             name = "name2")
         # --------- 3
-        for s in species:
-            print("sp ", s, "--",input_matrix[s,:])
+        # for s in species:
+        #     print("sp ", s, "--",input_matrix[s,:])
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r, tt] 
                          for r in reactions) 
             >= 1
             for s in species if sum(abs(input_matrix[s,r]) for r in reactions)>0.01),
-            name = "name3b")
+            name = "name3")
         # --------- 4
         m.addConstrs(
             (y[s, t] <= gb.quicksum(z[r, t] 
@@ -975,18 +1041,75 @@ def growthRateFoodWaste(output_matrix, input_matrix, t_max, number_periods):
     alpha = alpha_0
     while stop == False:
         xx, alphabar, aa, yy, nn, ww, hh, zz = growthRateFoodWasteFixed(alpha)
-        alpha = np.min([sum(output_matrix[s, r] * xx[r, periods[-1]] 
-                        for r in reactions)
-                        /
-                        sum(input_matrix[s, r] * xx[r, periods[-1]] 
-                        for r in reactions) 
-                    for s in aa])
-        # print(aa)
-        # print('-------------')
-        # print(alphabar)
+
+        vector = []
+        # -------------------------
+        vector = []
+        for s in species:
+            numerador = sum(output_matrix[s, r] * xx[r, periods[-1]] 
+                            for r in reactions)
+            denominador = sum(input_matrix[s, r] * xx[r, periods[-1]] 
+                              for r in reactions)
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            if ayuda != 0:
+                vector.append(ayuda)
+            
+        alpha_v1 = np.min(vector)
+        # -------------------------
+
+               
+        # -------------------------
+        vector = []
+        for a in aa:
+            numerador = sum(output_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                            for z in zz if z[1] == periods[-1] 
+                            and a[1] == periods[-1])
+            denominador = sum(input_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                              for z in zz if z[1] == periods[-1]
+                              and a[1] == periods[-1])
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            vector.append(ayuda)
+            
+        alpha_v2 = np.min(vector)
+        # ------------------------- 
+
+        # -------------------------
+        vector = []
+        for a in aa:
+            numerador = sum(output_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                            for z in zz if z[1] == periods[-1] 
+                            and a[1] == periods[-1])
+            denominador = sum(input_matrix[a[0], z[0]] * xx[z[0], periods[-1]] 
+                              for z in zz if z[1] == periods[-1]
+                              and a[1] == periods[-1])
+            if denominador == 0.0:
+                denominador = 0.00000000000001
+            ayuda = numerador/denominador
+            if ayuda != 0:
+                vector.append(ayuda)
+            
+        alpha_v3 = np.min(vector)
+        # -------------------------
+
+
+        alpha = alpha_v1
+        
         if (len(aa) < 1 or 
             (np.abs(alphabar) < 0.00000001 or 
              step > t_max)):
+            
+            print('xxxxxxxxxxxxxxxxxxxxxxx')
+            print('alpha_v1:' + str(alpha_v1))
+            print('alpha_v2:' + str(alpha_v2))
+            print('alpha_v3:' + str(alpha_v3))
+            print("Creo que la forma correcta de calcular")
+            print("alfa es la 2 pero es la que no funciona")
+            print('xxxxxxxxxxxxxxxxxxxxxxx')
+            
             stop = True
             alphaDict[step] = alpha
             return xx, alpha, step, alphaDict, alphabar, aa, yy, zz, nn, ww

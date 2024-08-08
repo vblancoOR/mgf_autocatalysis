@@ -62,7 +62,8 @@ def tryGrowthRateGraph(nameScenario):
 
     MaxIt = 1000
     x, alpha, step, alphaDict = code.growthRateGraph(output_matrix, input_matrix, MaxIt)
-    if alpha < 1:
+    print(alpha)
+    if alpha:
         print("Iterations: ", step, "alpha: ", alpha)
         alphaList = list(alphaDict.values())
         plt.scatter(range(len(alphaList)), alphaList)
@@ -196,6 +197,7 @@ def tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods):
     input_matrix, output_matrix = generator.readScenario(nameScenario)
 
     stoichiometric_matrix = output_matrix - input_matrix
+    print(stoichiometric_matrix.shape)
 
     xx, alpha, step, alphaDict, alphabar, aa, yy, zz, nn, ww = code.growthRateFoodWaste(output_matrix, input_matrix, 10000, number_periods)
     
@@ -203,14 +205,14 @@ def tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods):
     especies_sol = aux.cambiarFormatoEspecies(yy)
     species, reactions = giveMeSpeciesAndReactios(input_matrix, output_matrix)
     reacciones_sol = aux.cambiarFormatoReacciones(zz, reactions)
-    # plt.figure(1)
-    # drawing.dibujaPasos(especies_sol, reacciones_sol)
-    # plt.figure(2)
-    # drawing.dibuja(especies_sol, reacciones_sol)
-    # plt.figure(3)
-    # drawing.dibujaRedDePetriV0(especies_sol, reacciones_sol)
-    # plt.figure(4)
-    # drawing.dibujaRedDePetriV1(especies_sol, reacciones_sol)
+    plt.figure(1)
+    drawing.dibujaPasos(especies_sol, reacciones_sol)
+    plt.figure(2)
+    drawing.dibuja(especies_sol, reacciones_sol)
+    plt.figure(3)
+    drawing.dibujaRedDePetriV0(especies_sol, reacciones_sol)
+    plt.figure(4)
+    drawing.dibujaRedDePetriV1(especies_sol, reacciones_sol)
     # -------------
     print("S-:")
     print(input_matrix)
@@ -234,7 +236,7 @@ def tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods):
     print("Waste (w) =")
     dictww = aux.convierteDiccionarioDeTiempoYNombre(ww, species)
     print(dictww)
-    xxName = aux.modifyFlow(xx, species)
+    xxName = aux.modifyFlow(xx, reactions)
     print("Flow (x) =", xxName)
     print("t:", step)
     dictSimpleyy = aux.convierteDiccionarioDeTiempo(yy)
@@ -251,36 +253,48 @@ def tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods):
 
 
 
-# def main():
+def main():
     
     
     
-#     # # -------------------------------
-#     # numberSpecies = 10
-#     # numberReactions = 10
-#     # version = 69
-#     # createScenario(numberSpecies, numberReactions, version)
-#     # # -------------------------------
+    # # -------------------------------
+    # numberSpecies = 10
+    # numberReactions = 10
+    # version = 69
+    # createScenario(numberSpecies, numberReactions, version)
+    # # -------------------------------
     
     
-    
-#     # nameScenario = "formose"
-#     #nameScenario = "s10_r10_v1"
-#     nameScenario = "formose"
+    # nameScenario = "s4_r4_v0"
+    # nameScenario = "s4_r4_v1"
+    # nameScenario = "s4_r4_v2"
+    # nameScenario = "s4_r4_v3"
+    # nameScenario = "s4_r4_v4"
+    # nameScenario = "s4_r4_v69" # no autocatalytic
+    # nameScenario = "s5_r5_v0"
+    # nameScenario = "s6_r6_v0"
+    # nameScenario = "s7_r7_v0"
+    # nameScenario = "s8_r8_v0"
+    # nameScenario = "s9_r9_v0"
+    # nameScenario = "s10_r10_v0"
+    # nameScenario = "s10_r10_v1"
+    nameScenario = "s10_r10_v69" # no autocatalytic
+    # nameScenario = "s20_r20_v0" # no autocatalytic
+    # nameScenario = "formose" # no autocatalytic
 
-#     number_periods = 3
+    number_periods = 5
     
-#     # tryGrowthRateGraph(nameScenario)
-#     print('----------------------------------')
-#     # tryGrowthRateInSubGraph(nameScenario)
-#     print('----------------------------------')
-#     #tryGrowthRateInSubGraphWithTime(nameScenario, number_periods)
-#     print('----------------------------------')
-#     tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods)
-#     print('----------------------------------')
+    # tryGrowthRateGraph(nameScenario)
+    print('----------------------------------')
+    # tryGrowthRateInSubGraph(nameScenario)
+    print('----------------------------------')
+    tryGrowthRateInSubGraphWithTime(nameScenario, number_periods)
+    print('----------------------------------')
+    # tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods)
+    print('----------------------------------')
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
 
 
 
