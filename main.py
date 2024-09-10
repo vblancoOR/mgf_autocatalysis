@@ -12,6 +12,7 @@ import drawing
 import auxiliar as aux
 
 
+
 # =============================================================================
 def createScenario(numberSpecies, numberReactions, version):
     # Name scenario

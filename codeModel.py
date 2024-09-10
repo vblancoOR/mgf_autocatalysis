@@ -7,7 +7,7 @@ Created on Sat May 25 13:59:40 2024
 
 import numpy as np
 import gurobipy as gb
-
+import time
 
 # =============================================================================
 def growthRateGraph(output_matrix, input_matrix, max_steps):
@@ -75,10 +75,10 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
         # Constraints
         # --------------------------------------
         # 
-        print(number_species)
-        print([r for r in reactions])
-        print([s for s in species])
-        print(output_matrix.shape)
+        # print(number_species)
+        # print([r for r in reactions])
+        # print([s for s in species])
+        # print(output_matrix.shape)
         
         m.addConstrs(
             (alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
@@ -140,7 +140,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     alpha_t = alpha_0
     # --------------------------------------
 
-
+    start = time.time()
     while stop == False:
         # Solve model
         x_t, alphabar = modelGrowthRateFixed(previous_alpha)
@@ -156,7 +156,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
                                  for r in reactions) 
                              for s in species])
             alphaDict[step] = alpha_t
-            return x_t, alpha_t, step, alphaDict
+            return x_t, alpha_t, step, alphaDict, time.time()-start
         # Otherwise iterate
         else:
             alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
@@ -204,7 +204,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
                      for s in potential_aut])
     if alpha_0<0.00001:
         x_0 = np.random.randint(1,100, size=number_reactions)
-        print(output_matrix)
+        #print(output_matrix)
         alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
                          for r in reactions)
                      /
@@ -213,7 +213,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
                      for s in potential_aut])
 
     # --------------------------------------
-    print("alpha0: ", alpha_0)
+    #print("alpha0: ", alpha_0)
     # =========================================================================
     def modelGrowthRateFixed(alpha0):
         
@@ -330,8 +330,8 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
              for r in reactions), 
             name = "name10")
         #   
-        m.addConstr(gb.quicksum(a[s] for s in potential_aut) >= 2, name = "name11")
-        m.addConstr(gb.quicksum(z[r] for r in reactions) >= 2, name = "name12")
+        m.addConstr(gb.quicksum(a[s] for s in potential_aut) >= 1, name = "name11")
+        m.addConstr(gb.quicksum(z[r] for r in reactions) >= 1, name = "name12")
         # --------------------------------------      
     
         # Gurobi parameters
@@ -388,6 +388,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     # alphabar = 10000
     alpha = alpha_0
     alphabarold=gb.GRB.INFINITY
+    start=time.time()
     while stop == False:
             
 
@@ -408,7 +409,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
              step > t_max or np.abs(alphabar-alphabarold)<0.00001)):
             stop = True
             alphaDict[step] = alpha
-            return xx, alpha, step, alphaDict, aa, yy, zz
+            return xx, alpha, step, alphaDict, aa, yy, zz, time.time()-start
         else:
             alphaDict[step] = alpha
             alphabarold=alphabar
