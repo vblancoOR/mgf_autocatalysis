@@ -192,6 +192,8 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     species = range(number_species)
     # Reactions (list)
     reactions = range(number_reactions)
+    # Potential autocatalytic:
+    potential_aut=[s for s in species if sum(output_matrix[s,r] for r in reactions)>0.5 and sum(input_matrix[s,r] for r in reactions)>0.5]
     # Alpha_0 (float)
     x_0 = np.ones(number_reactions)
     alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
@@ -199,9 +201,19 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
                      /
                      sum(input_matrix[s, r] * x_0[r] 
                          for r in reactions) 
-                     for s in species])
+                     for s in potential_aut])
+    if alpha_0<0.00001:
+        x_0 = np.random.randint(1,100, size=number_reactions)
+        print(output_matrix)
+        alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
+                         for r in reactions)
+                     /
+                     sum(input_matrix[s, r] * x_0[r] 
+                         for r in reactions) 
+                     for s in potential_aut])
+
     # --------------------------------------
-    
+    print("alpha0: ", alpha_0)
     # =========================================================================
     def modelGrowthRateFixed(alpha0):
         
@@ -210,7 +222,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         #
         bigM1 = 1000
         # 
-        bigM2 = 10000
+        bigM2 = 1000
         # --------------------------------------
     
         # Initialize model
@@ -222,7 +234,7 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         # --------------------------------------
         # Flows
         x = m.addVars(number_reactions,
-                          ub = 100000, 
+                          ub = 1000, 
                           name = "x") 
         # Rate
         alpha = m.addVar(name = "alpha") 
@@ -234,6 +246,10 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         a = m.addVars(number_species,
                           vtype = gb.GRB.BINARY,
                           name = "a")
+        for s in species:
+            if s not in potential_aut:
+                a[s].ub=0
+
         #
         z = m.addVars(number_reactions,
                           vtype = gb.GRB.BINARY,
@@ -252,8 +268,8 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
             (
             alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
                                  for r in reactions)
-                    - alpha0 * gb.quicksum(input_matrix[s, r] * x[r] 
-                                           for r in reactions) 
+                    - alpha0 * gb.quicksum(input_matrix[s, r] * x[r]
+                                           for r in reactions) + bigM1*(1-a[s])
                     for s in species),
             name = "name1")
         
@@ -261,8 +277,8 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r] 
                          for r in reactions) 
-            >= 1
-            for s in species),
+            >= a[s]
+            for s in species if sum(input_matrix[s,r] for r in reactions)>=1),
             name = "name2")
         #
         m.addConstrs(
@@ -276,15 +292,15 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         m.addConstrs(
             (a[s] <= gb.quicksum(z[r] 
                                  for r in reactions 
-                                 if output_matrix[s,r] > 0) 
-             for s in species), 
+                                 if output_matrix[s,r] > 0.5) 
+             for s in potential_aut), 
             name = "name4")
         #
         m.addConstrs(
             (a[s] <= gb.quicksum(z[r] 
                                  for r in reactions
-                                 if input_matrix[s,r] > 0) 
-             for s in species), 
+                                 if input_matrix[s,r] > 0.5) 
+             for s in potential_aut), 
             name = "name5")
         #
         m.addConstrs(
@@ -293,14 +309,14 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
             name = "name6")
         #
         m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in species 
-                                 if output_matrix[s, r] > 0) 
+            (z[r] <= gb.quicksum(a[s] for s in potential_aut
+                                 if output_matrix[s, r] > 0.5) 
              for r in reactions), 
             name = "name7")
         #
         m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in species 
-                                 if input_matrix[s, r] > 0) 
+            (z[r] <= gb.quicksum(a[s] for s in potential_aut 
+                                 if input_matrix[s, r] > 0.5) 
              for r in reactions), 
             name = "name8")
         #
@@ -314,15 +330,15 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
              for r in reactions), 
             name = "name10")
         #   
-        m.addConstr(gb.quicksum(a[s] 
-                                for s in species) >= 2, name = "name11")
+        m.addConstr(gb.quicksum(a[s] for s in potential_aut) >= 2, name = "name11")
+        m.addConstr(gb.quicksum(z[r] for r in reactions) >= 2, name = "name12")
         # --------------------------------------      
     
         # Gurobi parameters
         # --------------------------------------
         m.Params.OutputFlag = 0
         # --------------------------------------
-        
+        m.write("model_SN.lp")
         # Run model
         # --------------------------------------
         m.optimize()
@@ -332,10 +348,10 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         # --------------------------------------
         if m.status != gb.GRB.OPTIMAL:
             # st=0
-            model.computeIIS()
+            m.computeIIS()
             
             IISfile="inf2.ILP"
-            model.write(IISfile)
+            m.write(IISfile)
                 
             print("INFEASIBLE!!!!!")
             with open(IISfile) as f: 
@@ -371,25 +387,31 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     alphaDict = {}
     # alphabar = 10000
     alpha = alpha_0
+    alphabarold=gb.GRB.INFINITY
     while stop == False:
             
 
         xx, alphabar, aa, yy, zz = modelGrowthRateFixed(alpha)
-        alpha = np.min([sum(output_matrix[s, r] * xx[r] 
+        alpha = np.min([sum(output_matrix[s, r] * xx[r]
                         for r in reactions)
                         /
                         sum(input_matrix[s, r] * xx[r] 
                         for r in reactions) 
                     for s in aa])
-            
+        print("**[%d] alphabar: "%step, alphabar, "alpha: ", alpha, end="") 
+        if alpha>1:
+            print("  AUTOCATALYTIC!")
+        else:
+            print()
         if (len(aa) < 1 or 
-            (np.abs(alphabar) < 0.00000001 or 
-             step > t_max)):
+            (np.abs(alphabar) < 0.0001 or 
+             step > t_max or np.abs(alphabar-alphabarold)<0.00001)):
             stop = True
             alphaDict[step] = alpha
             return xx, alpha, step, alphaDict, aa, yy, zz
         else:
             alphaDict[step] = alpha
+            alphabarold=alphabar
             step += 1
 # =============================================================================
 
@@ -416,12 +438,14 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
     periods = range(number_periods)
     # Alpha_0 (float)
     x_0 = np.ones(number_reactions)
+    
     alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
                          for r in reactions)
                      /
                      sum(input_matrix[s, r] * x_0[r] 
                          for r in reactions) 
-                     for s in species])
+                     for s in species if sum(input_matrix[s, r] * x_0[r] 
+                         for r in reactions)>0.0001])
     # alpha_0 = [alpha_0 for i in periods]
     # --------------------------------------
     
@@ -693,7 +717,8 @@ def growthRateFoodWaste(output_matrix, input_matrix, t_max, number_periods):
                      /
                      sum(input_matrix[s, r] * x_0[r] 
                          for r in reactions) 
-                     for s in species])
+                     for s in species if sum(input_matrix[s, r] * x_0[r] 
+                         for r in reactions)>0.0001])
     # --------------------------------------
     
     

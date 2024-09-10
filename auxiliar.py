@@ -46,10 +46,15 @@ def convierteDiccionarioDeTiempoYNombre(xx, names):
 # =============================================================================
 def modifyFlow(dictFlow, names):
     dictNames = dict(zip(range(len(names)), names))
+    print("names: ", dictNames)
     keys = list(dictFlow.keys())
+    print("keys: ", keys)
+    print("flow: ", dictFlow)
     values = list(dictFlow.values())
-    keys = [(dictNames[i[0]], i[1]) for i in keys]
-    sol = dict(zip(keys, values))
+    #keys1 = [(dictNames[i[0]], i[1]) for i in keys]
+    #sol0 = dict(zip(keys, values))
+    print("zip: ", zip(keys,values))
+    sol = {(dictNames[i[0]], dictNames[i[0]]): f  for i, f in zip(keys,values)}
     return sol
 # =============================================================================
 
