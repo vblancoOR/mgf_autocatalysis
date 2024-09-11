@@ -105,6 +105,19 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
         # Run model
         # --------------------------------------
         m.optimize()
+        if m.status != gb.GRB.OPTIMAL:
+            # st=0
+            # m.computeIIS()
+            
+            # IISfile="inf2.ILP"
+            # m.write(IISfile)
+                
+            # print("INFEASIBLE!!!!!")
+            # with open(IISfile) as f: 
+            #     for line in f: 
+            #         print(line.strip())
+    
+            return [], 0
         # --------------------------------------
     
         # Result
@@ -144,31 +157,34 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     while stop == False:
         # Solve model
         x_t, alphabar = modelGrowthRateFixed(previous_alpha)
-        # In case alphabar too little or number of steps larger than maximum,
-        # stop
-        if (np.abs(alphabar) < 0.00000001 or
-            step > max_steps):
-            stop = True
-            alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
-                                 for r in reactions)
-                             /
-                             sum(input_matrix[s, r] * x_t[r]
-                                 for r in reactions) 
-                             for s in species])
-            alphaDict[step] = alpha_t
-            return x_t, alpha_t, step, alphaDict, time.time()-start
-        # Otherwise iterate
+        if len(x_t)==0:
+            return [], -1, step, alphaDict, time.time()-start
         else:
-            alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
-                                 for r in reactions)
-                             /
-                             sum(input_matrix[s, r] * x_t[r] 
-                                 for r in reactions) 
-                             for s in species])
-            alphaDict[step] = alpha_t
-            # Initialize next step
-            step += 1
-            previous_alpha = alpha_t
+            # In case alphabar too little or number of steps larger than maximum,
+            # stop
+            if (np.abs(alphabar) < 0.00000001 or
+                step > max_steps):
+                stop = True
+                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
+                                    for r in reactions)
+                                /
+                                sum(input_matrix[s, r] * x_t[r]
+                                    for r in reactions) 
+                                for s in species])
+                alphaDict[step] = alpha_t
+                return x_t, alpha_t, step, alphaDict, time.time()-start
+            # Otherwise iterate
+            else:
+                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
+                                    for r in reactions)
+                                /
+                                sum(input_matrix[s, r] * x_t[r] 
+                                    for r in reactions) 
+                                for s in species])
+                alphaDict[step] = alpha_t
+                # Initialize next step
+                step += 1
+                previous_alpha = alpha_t
 
 # =============================================================================
 
