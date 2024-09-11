@@ -151,6 +151,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     alphaDict = {0: alpha_0}
     previous_alpha = alpha_0
     alpha_t = alpha_0
+    alphaold=gb.GRB.INFINITY
     # --------------------------------------
 
     start = time.time()
@@ -163,7 +164,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
             # In case alphabar too little or number of steps larger than maximum,
             # stop
             if (np.abs(alphabar) < 0.00000001 or
-                step > max_steps):
+                step > max_steps or np.abs(alphaold-alphabar)<0.0001):
                 stop = True
                 alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
                                     for r in reactions)
@@ -183,12 +184,201 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
                                 for s in species])
                 alphaDict[step] = alpha_t
                 # Initialize next step
+                alphaold=alphabar
                 step += 1
                 previous_alpha = alpha_t
 
 # =============================================================================
 
 
+# =============================================================================
+def growthRateGraph_a(output_matrix, input_matrix, max_steps):
+
+    # Parameters input
+    # ---------------------------
+    # Stoichiometric Matrix
+    stoichiometric_matrix = output_matrix - input_matrix
+    # Number Species (int)
+    number_species = stoichiometric_matrix.shape[0]
+    # Number Reactions (int)
+    number_reactions = stoichiometric_matrix.shape[1]
+    # Species (list)
+    species = range(number_species)
+    # Reactions (list)
+    reactions = range(number_reactions)
+    # Alpha_0 (float)
+    x_0 = np.ones(number_reactions)
+    # alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
+    #                      for r in reactions)
+    #                  /
+    #                  sum(input_matrix[s, r] * x_0[r] 
+    #                      for r in reactions) 
+    #                  for s in species])
+    vector = []
+    for s in species:
+        numerador = sum(output_matrix[s, r] * x_0[r] 
+                        for r in reactions)
+        denominador = sum(input_matrix[s, r] * x_0[r] 
+                          for r in reactions)
+        if denominador == 0.0:
+            denominador = 0.00000000000001
+        ayuda = numerador/denominador
+        vector.append(ayuda)
+        
+    alpha_0 = np.min(vector)
+            
+
+    # --------------------------------------
+
+    # =========================================================================
+    def modelGrowthRateFixeda(previous_alpha):
+    
+        # Initialize model
+        # --------------------------------------
+        m = gb.Model("Growth_Rate_Model")
+        # --------------------------------------
+    
+        # Variables
+        # --------------------------------------
+        # Flows
+        x = m.addVars(number_reactions,
+                      lb = 1,
+                      ub = 100000,
+                      name = "x")
+        # Rate
+        alpha = m.addVar(name = "alpha")
+        a = m.addVars(number_species, vtype=gb.GRB.BINARY, name="a")
+        # --------------------------------------
+    
+        # Objective function
+        # --------------------------------------
+        m.setObjective(alpha, gb.GRB.MAXIMIZE)
+        # --------------------------------------
+    
+        # Constraints
+        # --------------------------------------
+        # 
+        # print(number_species)
+        # print([r for r in reactions])
+        # print([s for s in species])
+        # print(output_matrix.shape)
+        
+        m.addConstrs(
+            (alpha <= a[s]*gb.quicksum(output_matrix[s, r] * x[r] 
+                                  for r in reactions) 
+                     - a[s]*previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
+                                            for r in reactions)
+                     for s in species), "x")
+        #
+        m.addConstrs(
+            (gb.quicksum(input_matrix[s, r] * x[r] 
+                         for r in reactions) 
+             >= a[s] 
+             for s in species), "y")
+        m.addConstr(gb.quicksum(a[s] for s in species)>=1)
+
+        for s in species:
+            if sum(output_matrix[s,r] for r in reactions)<0.5 or sum(input_matrix[s,r] for r in reactions)<0.5:
+                a[s].ub=0
+        # --------------------------------------
+    
+        # Gurobi parameters
+        # --------------------------------------
+        # m.Params.LogToConsole = 0
+        # m.Params.MIPGap = gap
+        # m.Params.TimeLimit = timelimit
+        m.Params.OutputFlag = 0
+        # --------------------------------------
+    
+        # Run model
+        # --------------------------------------
+        m.optimize()
+        if m.status != gb.GRB.OPTIMAL:
+            # st=0
+            # m.computeIIS()
+            
+            # IISfile="inf2.ILP"
+            # m.write(IISfile)
+                
+            # print("INFEASIBLE!!!!!")
+            # with open(IISfile) as f: 
+            #     for line in f: 
+            #         print(line.strip())
+    
+            return [], 0, []
+        # --------------------------------------
+    
+        # Result
+        # --------------------------------------
+        # print('xxxxxxxxxxxxxx')
+        # print(m.status)
+        # m.Params.DualReductions = 0
+        # m.optimize()
+        # print(m.status)
+
+        # all_vars = m.getVars()
+        # values = m.getAttr("X", all_vars)
+        # names = m.getAttr("VarName", all_vars)
+        
+        # for name, val in zip(names, values):
+        #     print(f"{name} = {val}")
+
+        # print('xxxxxxxxxxxxxx')
+        
+        xsol = np.array([x[r].x for r in reactions])
+        alphasol = alpha.x
+        asol = np.array([s for s in species if a[s].x>0.5])
+        # --------------------------------------
+    
+        return xsol, alphasol, asol
+    # =========================================================================
+
+    # Initialize algorithm
+    # --------------------------------------
+    stop = False
+    step = 0
+    alphaDict = {0: alpha_0}
+    previous_alpha = alpha_0
+    alpha_t = alpha_0
+    alphaold=gb.GRB.INFINITY
+    # --------------------------------------
+
+    start = time.time()
+    while stop == False:
+        # Solve model
+        x_t, alphabar, a_t = modelGrowthRateFixeda(previous_alpha)
+        #print("alphabar: ", alphabar, "alpha: ", alpha_t)
+        if len(x_t)==0:
+            return [], -1, step, alphaDict, time.time()-start, []
+        else:
+            # In case alphabar too little or number of steps larger than maximum,
+            # stop
+            if (np.abs(alphabar) < 0.00000001 or
+                step > max_steps or np.abs(alphaold-alphabar)<0.0001):
+                stop = True
+                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
+                                    for r in reactions)
+                                /
+                                sum(input_matrix[s, r] * x_t[r]
+                                    for r in reactions) 
+                                for s in species])
+                alphaDict[step] = alpha_t
+                return x_t, alpha_t, step, alphaDict, time.time()-start, a_t
+            # Otherwise iterate
+            else:
+                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
+                                    for r in reactions)
+                                /
+                                sum(input_matrix[s, r] * x_t[r] 
+                                    for r in reactions) 
+                                for s in a_t])
+                alphaDict[step] = alpha_t
+                # Initialize next step
+                alphaold=alphabar
+                step += 1
+                previous_alpha = alpha_t
+
+# =============================================================================
 
 
 
