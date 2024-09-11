@@ -187,7 +187,6 @@ def tryGrowthRateInSubGraphWithTime(nameScenario, number_periods):
         print("Autonoma:", generator.checkAutonomy(SSp, SSm))
         print("S:")
         print(SSp - SSm)
-
 # =============================================================================
 
 
@@ -278,19 +277,22 @@ def main():
     # nameScenario = "s9_r9_v0"
     # nameScenario = "s10_r10_v0"
     # nameScenario = "s10_r10_v1"
-    nameScenario = "s10_r10_v69" # no autocatalytic
+    # nameScenario = "s10_r10_v69" # no autocatalytic
     # nameScenario = "s20_r20_v0" # no autocatalytic
-    # nameScenario = "formose" # no autocatalytic
+    nameScenario = "formose" # no autocatalytic
+    # nameScenario = "praful_1" # no autocatalytic
+    # nameScenario = "praful_2" # no autocatalytic
 
-    number_periods = 5
+
+    number_periods = 3
     
     # tryGrowthRateGraph(nameScenario)
     print('----------------------------------')
     # tryGrowthRateInSubGraph(nameScenario)
     print('----------------------------------')
-    tryGrowthRateInSubGraphWithTime(nameScenario, number_periods)
+    # tryGrowthRateInSubGraphWithTime(nameScenario, number_periods)
     print('----------------------------------')
-    # tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods)
+    tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods)
     print('----------------------------------')
 
 if __name__ == "__main__":
@@ -300,8 +302,8 @@ if __name__ == "__main__":
 
 
 
-
-
+# s4_r4_v3 2 y 3
+# s9_r9_v0 3
 
 
 

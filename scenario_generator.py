@@ -170,7 +170,38 @@ def readScenario(name):
 # =============================================================================
            
             
-
+# =============================================================================
+def transformStoichiometricIntoInputAndOuput(path, name):
+    
+    mm = np.loadtxt(path, dtype= int)
+    
+    input_matrix = []
+    output_matrix = []
+    for i in mm:
+        vector_input_matrix = []
+        vector_output_matrix = []
+        for j in i:
+            if j > 0.5:
+                vector_input_matrix.append(0)
+                vector_output_matrix.append(1)
+            elif j < -0.5:
+                vector_input_matrix.append(1)
+                vector_output_matrix.append(0)
+            else:
+                vector_input_matrix.append(0)
+                vector_output_matrix.append(0)
+        input_matrix.append(vector_input_matrix)
+        output_matrix.append(vector_output_matrix)
+        
+    input_matrix = np.matrix(input_matrix)
+    output_matrix = np.matrix(output_matrix)
+    
+    f = open(name + "_minus.txt", "w")
+    np.savetxt(f, input_matrix, fmt='%d')
+    
+    q = open(name + "_plus.txt", "w")
+    np.savetxt(q, output_matrix, fmt='%d')
+# =============================================================================
 
 
 
