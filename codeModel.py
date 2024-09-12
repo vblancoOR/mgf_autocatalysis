@@ -106,16 +106,16 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
         # --------------------------------------
         m.optimize()
         if m.status != gb.GRB.OPTIMAL:
-            # st=0
-            # m.computeIIS()
+            st=0
+            m.computeIIS()
             
-            # IISfile="inf2.ILP"
-            # m.write(IISfile)
+            IISfile="inf2.ILP"
+            m.write(IISfile)
                 
-            # print("INFEASIBLE!!!!!")
-            # with open(IISfile) as f: 
-            #     for line in f: 
-            #         print(line.strip())
+            print("INFEASIBLE!!!!!")
+            with open(IISfile) as f: 
+                for line in f: 
+                    print(line.strip())
     
             return [], 0
         # --------------------------------------
@@ -158,6 +158,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     while stop == False:
         # Solve model
         x_t, alphabar = modelGrowthRateFixed(previous_alpha)
+        print("[%d] alphabar: %.4f, alpha: %.4f"%(step,alphabar,alpha_t))
         if len(x_t)==0:
             return [], -1, step, alphaDict, time.time()-start
         else:
@@ -167,21 +168,21 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
                 step > max_steps or np.abs(alphaold-alphabar)<0.0001):
                 stop = True
                 alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
-                                    for r in reactions)
-                                /
-                                sum(input_matrix[s, r] * x_t[r]
-                                    for r in reactions) 
-                                for s in species])
+                                        for r in reactions)
+                                    /
+                                    sum(input_matrix[s, r] * x_t[r]
+                                        for r in reactions) 
+                                    for s in species])
                 alphaDict[step] = alpha_t
                 return x_t, alpha_t, step, alphaDict, time.time()-start
             # Otherwise iterate
             else:
-                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
-                                    for r in reactions)
-                                /
-                                sum(input_matrix[s, r] * x_t[r] 
-                                    for r in reactions) 
-                                for s in species])
+                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
+                                        for r in reactions)
+                                    /
+                                    sum(input_matrix[s, r] * x_t[r]
+                                        for r in reactions) 
+                                    for s in species])
                 alphaDict[step] = alpha_t
                 # Initialize next step
                 alphaold=alphabar
@@ -275,11 +276,16 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
                          for r in reactions) 
              >= a[s] 
              for s in species), "y")
-        m.addConstr(gb.quicksum(a[s] for s in species)>=1)
+        m.addConstr(gb.quicksum(a[s] for s in species)>=1, name="sum_a>=1")
 
         for s in species:
             if sum(output_matrix[s,r] for r in reactions)<0.5 or sum(input_matrix[s,r] for r in reactions)<0.5:
                 a[s].ub=0
+        for r in reactions:
+            m.addConstr(gb.quicksum(a[s] for s in species if input_matrix[s,r]>0.5)>=1, name="aut_1[%d]"%r)
+            m.addConstr(gb.quicksum(a[s] for s in species if output_matrix[s,r]>0.5)>=1, name="aut_2[%d]"%r)
+
+
         # --------------------------------------
     
         # Gurobi parameters
@@ -295,15 +301,15 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
         m.optimize()
         if m.status != gb.GRB.OPTIMAL:
             # st=0
-            # m.computeIIS()
+            m.computeIIS()
             
-            # IISfile="inf2.ILP"
-            # m.write(IISfile)
+            IISfile="infa.ILP"
+            m.write(IISfile)
                 
-            # print("INFEASIBLE!!!!!")
-            # with open(IISfile) as f: 
-            #     for line in f: 
-            #         print(line.strip())
+            print("INFEASIBLE!!!!!")
+            with open(IISfile) as f: 
+                for line in f: 
+                    print(line.strip())
     
             return [], 0, []
         # --------------------------------------
@@ -353,7 +359,7 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
         else:
             # In case alphabar too little or number of steps larger than maximum,
             # stop
-            if (np.abs(alphabar) < 0.00000001 or
+            if (np.abs(alphabar) < 0.000001 or
                 step > max_steps or np.abs(alphaold-alphabar)<0.0001):
                 stop = True
                 alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
@@ -361,7 +367,8 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
                                 /
                                 sum(input_matrix[s, r] * x_t[r]
                                     for r in reactions) 
-                                for s in species])
+                                for s in a_t])
+                #print("alpha_t[%d])%.4f"%(step, alpha_t))
                 alphaDict[step] = alpha_t
                 return x_t, alpha_t, step, alphaDict, time.time()-start, a_t
             # Otherwise iterate

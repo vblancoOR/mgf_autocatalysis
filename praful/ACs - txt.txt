@@ -1,0 +1,346 @@
+#Species:  681 # Reactions:  617
+#Species:  681 # Reactions:  617
+Generating Autocatalytic Cycles...
+**** Sol 1: 6 reactions
+	 #Species:  6 #FoodSet:  2 #WasteSet:  1 #ExtraMembersSet:  0 #Reactions:  6
+	 Food Set ['CO', 'O=CC(O)C(=O)O']
+	 Waste Set ['O=C(O)CC(=O)O']
+	 Extra M in AC:  []
+	 Species in AC:  ['COC(=O)CC(O)(O)C(O)C=O', 'O=CC(O)C(O)(O)C(O)C=O', 'O=CC(O)C(O)(O)CC(=O)O', 'O=CCO', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R31', 'R143', 'R149', 'R347', 'R459', 'R497']
+	 Flow:  [0.01, 0.01, 0.01, 0.01, 0.01, 0.01] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0)]
+			 R31: O=CCOC(=O)CC(=O)O ->O=C(O)CC(=O)O+O=CCO
+			 R143: O=CC(O)C(=O)O+O=CCO ->O=CC(O)C(O)(O)C(O)C=O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R459: O=CC(O)C(O)(O)C(O)C=O ->O=CC(O)C(O)(O)CC(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+	 - CPU Time: 0.03 secs
+**** Sol 2: 10 reactions
+	 #Species:  10 #FoodSet:  4 #WasteSet:  1 #ExtraMembersSet:  0 #Reactions:  10
+	 Food Set ['CC(=O)O', 'CO', 'NCCC(=O)O', 'O=CC(O)C(=O)O']
+	 Waste Set ['NCC(C(=O)O)C(O)CO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(C(=O)O)C(O)CO', 'O=C(O)CC(=O)O', 'O=CC(O)C(O)(O)C(O)C=O', 'O=CC(O)C(O)(O)CC(=O)O', 'O=CCO', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R79', 'R104', 'R135', 'R143', 'R149', 'R347', 'R459', 'R497', 'R519']
+	 Flow:  [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R79: CC(O)(O)C(C(=O)O)C(=O)O ->O=C(O)C(C(=O)O)C(O)CO
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R135: O=C(O)C(C(=O)O)C(O)CO ->O=C(O)CC(=O)O+O=CCO
+			 R143: O=CC(O)C(=O)O+O=CCO ->O=CC(O)C(O)(O)C(O)C=O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R459: O=CC(O)C(O)(O)C(O)C=O ->O=CC(O)C(O)(O)CC(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.03 secs
+**** Sol 3: 11 reactions
+	 #Species:  11 #FoodSet:  4 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  11
+	 Food Set ['CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)CC(=O)O', 'CC=O', 'COC(C)=O']
+	 Waste Set ['CC(=O)OC', 'CC(O)(O)CC=O', 'O=CCC(O)(O)CC(=O)O']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(C)(O)O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)CC=O', 'O=C(O)C(CO)C(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCC(=O)O', 'O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O']
+	 Reactions in AC:  ['R12', 'R28', 'R77', 'R85', 'R93', 'R134', 'R151', 'R221', 'R373', 'R512', 'R584']
+	 Flow:  [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.02, 0.01, 0.02, 0.01, 0.01] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0)]
+			 R12: CC(O)(O)CC(=O)O+CO ->COC(=O)CC(C)(O)O
+			 R28: COC(=O)CC(O)(O)CC=O ->CC(=O)OC+O=CCC(=O)O
+			 R77: CC=O+O=CC(C(=O)O)C(O)(O)CC(=O)O ->O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O
+			 R85: COC(=O)CC(C)(O)O ->COC(=O)CC(O)(O)CC=O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R584: O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O ->O=CCC(=O)O+O=CCC(O)(O)CC(=O)O
+	 - CPU Time: 0.03 secs
+**** Sol 4: 13 reactions
+	 #Species:  13 #FoodSet:  4 #WasteSet:  2 #ExtraMembersSet:  1 #Reactions:  13
+	 Food Set ['CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)CC(=O)O', 'COC(C)=O', 'O=CCC(O)CC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CCC(O)(O)CC(=O)O']
+	 Extra M in AC:  ['O=CC(C(=O)O)C(O)(O)CC(=O)O']
+	 Species in AC:  ['CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CC=O', 'CO', 'COC(=O)CC(C)(O)O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(C=O)C(O)(O)CC(O)CC=O', 'COC(=O)CC(O)(O)C(C=O)C(O)(O)CC=O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)CC=O', 'O=C(O)C(CO)C(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CCC(=O)O', 'O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O']
+	 Reactions in AC:  ['R12', 'R38', 'R77', 'R85', 'R93', 'R134', 'R151', 'R221', 'R373', 'R447', 'R512', 'R584', 'R615']
+	 Flow:  [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01] --> Production:  [np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0)]
+			 R12: CC(O)(O)CC(=O)O+CO ->COC(=O)CC(C)(O)O
+			 R38: COC(=O)CC(O)(O)CC=O+O=CCC(O)CC(=O)O ->COC(=O)CC(O)(O)C(C=O)C(O)(O)CC(O)CC=O
+			 R77: CC=O+O=CC(C(=O)O)C(O)(O)CC(=O)O ->O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O
+			 R85: COC(=O)CC(C)(O)O ->COC(=O)CC(O)(O)CC=O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R447: COC(=O)CC(O)(O)C(C=O)C(O)(O)CC(O)CC=O ->CC=O+COC(=O)CC(O)(O)C(C=O)C(O)(O)CC=O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R584: O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O ->O=CCC(=O)O+O=CCC(O)(O)CC(=O)O
+			 R615: COC(=O)CC(O)(O)C(C=O)C(O)(O)CC=O ->CC=O+COC(=O)CC(O)(O)C(C=O)C(=O)O
+	 - CPU Time: 0.03 secs
+5   ..**** Sol 5: 15 reactions
+	 #Species:  15 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  15
+	 Food Set ['CC(=O)O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)C(O)(O)CC(=O)O', 'O=CCC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'NCC(C(=O)O)C(O)CO', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)CO', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R88', 'R93', 'R102', 'R104', 'R134', 'R149', 'R151', 'R221', 'R248', 'R347', 'R373', 'R497', 'R512', 'R519']
+	 Flow:  [0.01, 0.01, 0.02, 0.01, 0.02, 0.02, 0.02, 0.03, 0.02, 0.01, 0.02, 0.02, 0.02, 0.02, 0.01] --> Production:  [np.float64(0.0), np.float64(-0.01), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R88: CC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R102: O=CC(C(=O)O)C(O)CO ->CC(O)(O)C(C=O)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R248: NCC(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.04 secs
+**** Sol 6: 16 reactions
+	 #Species:  16 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  16
+	 Food Set ['CC(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC=O', 'COC(C)=O', 'O=CC(O)C(O)(O)CC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CCC(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCC(=O)O', 'O=CCC(O)(O)C(C(=O)O)C(=O)O', 'O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R31', 'R74', 'R77', 'R93', 'R134', 'R140', 'R149', 'R151', 'R221', 'R347', 'R373', 'R443', 'R497', 'R512', 'R584']
+	 Flow:  [0.01, 0.01, 0.01, 0.01, 0.02, 0.02, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.01, 0.01, 0.02, 0.01] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R31: O=CCOC(=O)CC(=O)O ->O=C(O)CC(=O)O+O=CCO
+			 R74: CC(=O)O+O=CCC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O
+			 R77: CC=O+O=CC(C(=O)O)C(O)(O)CC(=O)O ->O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R140: CC(O)(O)C(C(=O)O)C(=O)O ->O=CCC(O)(O)C(C(=O)O)C(=O)O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R443: CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R584: O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O ->O=CCC(=O)O+O=CCC(O)(O)CC(=O)O
+	 - CPU Time: 0.03 secs
+**** Sol 7: 16 reactions
+	 #Species:  16 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  16
+	 Food Set ['CC(=O)O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)C(O)(O)CC(=O)O', 'O=CCC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'NCC(C(=O)O)C(O)CO', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(C(=O)O)C(O)CO', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)CO', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R79', 'R93', 'R102', 'R104', 'R122', 'R134', 'R149', 'R151', 'R221', 'R248', 'R347', 'R373', 'R497', 'R512', 'R519']
+	 Flow:  [0.02, 0.01, 0.02, 0.03, 0.02, 0.01, 0.02, 0.02, 0.03, 0.02, 0.01, 0.02, 0.03, 0.02, 0.02, 0.02] --> Production:  [np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(-0.01), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R79: CC(O)(O)C(C(=O)O)C(=O)O ->O=C(O)C(C(=O)O)C(O)CO
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R102: O=CC(C(=O)O)C(O)CO ->CC(O)(O)C(C=O)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R122: O=C(O)C(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R248: NCC(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.04 secs
+**** Sol 8: 17 reactions
+	 #Species:  17 #FoodSet:  6 #WasteSet:  4 #ExtraMembersSet:  0 #Reactions:  17
+	 Food Set ['CC(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC=O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)C(O)(O)CC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'NCC(C(=O)O)C(O)CO', 'O=CCC(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCC(=O)O', 'O=CCC(O)(O)C(C(=O)O)C(=O)O', 'O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R74', 'R77', 'R93', 'R104', 'R134', 'R140', 'R149', 'R151', 'R221', 'R347', 'R373', 'R443', 'R497', 'R512', 'R519', 'R584']
+	 Flow:  [0.01, 0.01, 0.02, 0.02, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.02, 0.02, 0.01, 0.01, 0.02, 0.01, 0.01] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.01)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R74: CC(=O)O+O=CCC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O
+			 R77: CC=O+O=CC(C(=O)O)C(O)(O)CC(=O)O ->O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R140: CC(O)(O)C(C(=O)O)C(=O)O ->O=CCC(O)(O)C(C(=O)O)C(=O)O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R443: CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+			 R584: O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O ->O=CCC(=O)O+O=CCC(O)(O)CC(=O)O
+	 - CPU Time: 0.04 secs
+**** Sol 9: 17 reactions
+	 #Species:  17 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  17
+	 Food Set ['CC(=O)O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)C(O)(O)CC(=O)O', 'O=CCC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'NCC(C(=O)O)C(O)CO', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)CO', 'O=CCC(O)(O)C(C(=O)O)C(=O)O', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R74', 'R93', 'R102', 'R104', 'R134', 'R140', 'R149', 'R151', 'R221', 'R248', 'R347', 'R373', 'R443', 'R497', 'R512', 'R519']
+	 Flow:  [0.02, 0.01, 0.03, 0.01, 0.02, 0.02, 0.02, 0.02, 0.01, 0.02, 0.02, 0.02, 0.03, 0.01, 0.02, 0.02, 0.02] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(-0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.01), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R74: CC(=O)O+O=CCC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R102: O=CC(C(=O)O)C(O)CO ->CC(O)(O)C(C=O)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R140: CC(O)(O)C(C(=O)O)C(=O)O ->O=CCC(O)(O)C(C(=O)O)C(=O)O
+			 R149: CO+O=CC(O)C(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C(O)C=O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R248: NCC(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R443: CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.03 secs
+10   ..**** Sol 10: 17 reactions
+	 #Species:  17 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  17
+	 Food Set ['CC(=O)O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)(O)CC(=O)O', 'O=CCC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(=O)C=O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'COC(=O)CC(O)(O)C=O', 'NCC(C(=O)O)C(O)CO', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)CO', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R88', 'R93', 'R97', 'R102', 'R104', 'R124', 'R134', 'R151', 'R221', 'R248', 'R347', 'R373', 'R407', 'R497', 'R512', 'R519']
+	 Flow:  [0.02, 0.02, 0.03, 0.02, 0.01, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.02, 0.03, 0.02, 0.02, 0.03, 0.02] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R88: CC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R97: COC(=O)CC(O)(O)C=O ->COC(=O)CC(O)(O)C(=O)C=O
+			 R102: O=CC(C(=O)O)C(O)CO ->CC(O)(O)C(C=O)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R124: CO+O=CC(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C=O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R248: NCC(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R407: COC(=O)CC(O)(O)C(=O)C=O ->COC(=O)CC(O)(O)C(O)C=O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.04 secs
+**** Sol 11: 18 reactions
+	 #Species:  18 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  18
+	 Food Set ['CC(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC=O', 'COC(C)=O', 'O=CC(O)(O)CC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CCC(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(=O)C=O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'COC(=O)CC(O)(O)C=O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCC(=O)O', 'O=CCC(O)(O)C(C(=O)O)C(=O)O', 'O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R31', 'R74', 'R77', 'R93', 'R97', 'R124', 'R134', 'R140', 'R151', 'R221', 'R347', 'R373', 'R407', 'R443', 'R497', 'R512', 'R584']
+	 Flow:  [0.01, 0.01, 0.01, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.02, 0.01, 0.02, 0.02, 0.01, 0.01, 0.02, 0.02] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R31: O=CCOC(=O)CC(=O)O ->O=C(O)CC(=O)O+O=CCO
+			 R74: CC(=O)O+O=CCC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O
+			 R77: CC=O+O=CC(C(=O)O)C(O)(O)CC(=O)O ->O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R97: COC(=O)CC(O)(O)C=O ->COC(=O)CC(O)(O)C(=O)C=O
+			 R124: CO+O=CC(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C=O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R140: CC(O)(O)C(C(=O)O)C(=O)O ->O=CCC(O)(O)C(C(=O)O)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R407: COC(=O)CC(O)(O)C(=O)C=O ->COC(=O)CC(O)(O)C(O)C=O
+			 R443: CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R584: O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O ->O=CCC(=O)O+O=CCC(O)(O)CC(=O)O
+	 - CPU Time: 0.04 secs
+**** Sol 12: 18 reactions
+	 #Species:  18 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  18
+	 Food Set ['CC(=O)O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)(O)CC(=O)O', 'O=CCC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(=O)C=O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'COC(=O)CC(O)(O)C=O', 'NCC(C(=O)O)C(O)CO', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(C(=O)O)C(O)CO', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)CO', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R79', 'R93', 'R97', 'R102', 'R104', 'R122', 'R124', 'R134', 'R151', 'R221', 'R248', 'R347', 'R373', 'R407', 'R497', 'R512', 'R519']
+	 Flow:  [0.02, 0.02, 0.03, 0.02, 0.03, 0.02, 0.02, 0.02, 0.03, 0.03, 0.03, 0.02, 0.02, 0.03, 0.02, 0.02, 0.03, 0.02] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R79: CC(O)(O)C(C(=O)O)C(=O)O ->O=C(O)C(C(=O)O)C(O)CO
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R97: COC(=O)CC(O)(O)C=O ->COC(=O)CC(O)(O)C(=O)C=O
+			 R102: O=CC(C(=O)O)C(O)CO ->CC(O)(O)C(C=O)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R122: O=C(O)C(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R124: CO+O=CC(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C=O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R248: NCC(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R407: COC(=O)CC(O)(O)C(=O)C=O ->COC(=O)CC(O)(O)C(O)C=O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.07 secs
+**** Sol 13: 19 reactions
+	 #Species:  19 #FoodSet:  6 #WasteSet:  4 #ExtraMembersSet:  0 #Reactions:  19
+	 Food Set ['CC(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC=O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)(O)CC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'NCC(C(=O)O)C(O)CO', 'O=CCC(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(=O)C=O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'COC(=O)CC(O)(O)C=O', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCC(=O)O', 'O=CCC(O)(O)C(C(=O)O)C(=O)O', 'O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R74', 'R77', 'R93', 'R97', 'R104', 'R124', 'R134', 'R140', 'R151', 'R221', 'R347', 'R373', 'R407', 'R443', 'R497', 'R512', 'R519', 'R584']
+	 Flow:  [0.01, 0.01, 0.02, 0.02, 0.02, 0.01, 0.02, 0.02, 0.01, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.02, 0.01, 0.02] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R74: CC(=O)O+O=CCC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O
+			 R77: CC=O+O=CC(C(=O)O)C(O)(O)CC(=O)O ->O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R97: COC(=O)CC(O)(O)C=O ->COC(=O)CC(O)(O)C(=O)C=O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R124: CO+O=CC(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C=O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R140: CC(O)(O)C(C(=O)O)C(=O)O ->O=CCC(O)(O)C(C(=O)O)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R407: COC(=O)CC(O)(O)C(=O)C=O ->COC(=O)CC(O)(O)C(O)C=O
+			 R443: CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+			 R584: O=CCC(O)(O)C(C=O)C(O)(O)CC(=O)O ->O=CCC(=O)O+O=CCC(O)(O)CC(=O)O
+	 - CPU Time: 0.03 secs
+**** Sol 14: 19 reactions
+	 #Species:  19 #FoodSet:  5 #WasteSet:  3 #ExtraMembersSet:  0 #Reactions:  19
+	 Food Set ['CC(=O)O', 'COC(C)=O', 'NCCC(=O)O', 'O=CC(O)(O)CC(=O)O', 'O=CCC(=O)O']
+	 Waste Set ['CC(O)(O)CC=O', 'O=CC(C(=O)O)C(O)(O)CC(=O)O', 'O=CCO']
+	 Extra M in AC:  []
+	 Species in AC:  ['CC(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O', 'CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O', 'CO', 'COC(=O)CC(O)(O)C(=O)C=O', 'COC(=O)CC(O)(O)C(C=O)C(=O)O', 'COC(=O)CC(O)(O)C(CO)C(=O)O', 'COC(=O)CC(O)(O)C(O)C=O', 'COC(=O)CC(O)(O)C=O', 'NCC(C(=O)O)C(O)CO', 'NCC(C(=O)O)C(O)COC(=O)CC(=O)O', 'O=C(O)C(CO)C(=O)O', 'O=C(O)CC(=O)O', 'O=CC(C(=O)O)C(=O)O', 'O=CC(C(=O)O)C(O)CO', 'O=CCC(O)(O)C(C(=O)O)C(=O)O', 'O=CCOC(=O)CC(=O)O', 'O=CCOC(=O)CC(O)(O)C(O)C=O']
+	 Reactions in AC:  ['R16', 'R74', 'R93', 'R97', 'R102', 'R104', 'R124', 'R134', 'R140', 'R151', 'R221', 'R248', 'R347', 'R373', 'R407', 'R443', 'R497', 'R512', 'R519']
+	 Flow:  [0.02, 0.02, 0.03, 0.02, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.03, 0.02, 0.02, 0.03, 0.02, 0.02, 0.02, 0.03, 0.02] --> Production:  [np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.01), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0), np.float64(0.0)]
+			 R16: CC(=O)O+O=C(O)CC(=O)O ->CC(O)(O)C(C(=O)O)C(=O)O
+			 R74: CC(=O)O+O=CCC(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O
+			 R93: O=CC(C(=O)O)C(=O)O ->O=C(O)C(CO)C(=O)O
+			 R97: COC(=O)CC(O)(O)C=O ->COC(=O)CC(O)(O)C(=O)C=O
+			 R102: O=CC(C(=O)O)C(O)CO ->CC(O)(O)C(C=O)C(=O)O
+			 R104: NCCC(=O)O+O=CCOC(=O)CC(=O)O ->NCC(C(=O)O)C(O)COC(=O)CC(=O)O
+			 R124: CO+O=CC(O)(O)CC(=O)O ->COC(=O)CC(O)(O)C=O
+			 R134: COC(C)=O+O=C(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(CO)C(=O)O
+			 R140: CC(O)(O)C(C(=O)O)C(=O)O ->O=CCC(O)(O)C(C(=O)O)C(=O)O
+			 R151: CC(O)(O)C(C=O)C(=O)O+O=CCC(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R221: COC(=O)CC(O)(O)C(C=O)C(=O)O ->CO+O=CC(C(=O)O)C(O)(O)CC(=O)O
+			 R248: NCC(C(=O)O)C(O)CO ->O=CC(C(=O)O)C(O)CO
+			 R347: COC(=O)CC(O)(O)C(O)C=O ->O=CCOC(=O)CC(O)(O)C(O)C=O
+			 R373: CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O ->CC(O)(O)CC=O+O=CC(C(=O)O)C(=O)O
+			 R407: COC(=O)CC(O)(O)C(=O)C=O ->COC(=O)CC(O)(O)C(O)C=O
+			 R443: CC(O)(O)C(C=O)C(O)(O)C(C(=O)O)C(=O)O ->CC(O)(O)C(C=O)C(O)(O)C(C=O)C(=O)O
+			 R497: O=CCOC(=O)CC(O)(O)C(O)C=O ->O=CCO+O=CCOC(=O)CC(=O)O
+			 R512: COC(=O)CC(O)(O)C(CO)C(=O)O ->COC(=O)CC(O)(O)C(C=O)C(=O)O
+			 R519: NCC(C(=O)O)C(O)COC(=O)CC(=O)O ->NCC(C(=O)O)C(O)CO+O=C(O)CC(=O)O
+	 - CPU Time: 0.04 secs
+
+
+# Autocatalytic Cycles: 14
+Consumed Time: 0.50 secs.
+Saved in output/AC_n423334.xlsx
