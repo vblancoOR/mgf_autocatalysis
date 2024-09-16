@@ -3,9 +3,6 @@
 Maximize
  
 Subject To
- aut_2[16]: a[106] >= 1
+ aut_1[6]: >= 1
 Bounds
- a[106] = 0
-Binaries
- a[106]
 End

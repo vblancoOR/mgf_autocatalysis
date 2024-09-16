@@ -3,6 +3,6 @@
 Maximize
  
 Subject To
- y[7]: >= 1
+ y[9]: >= 1
 Bounds
 End

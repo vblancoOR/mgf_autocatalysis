@@ -25,6 +25,68 @@ def createScenario(numberSpecies, numberReactions, version):
     generator.saveMatrices(inputMatrix, outputMatrix, name)
 # =============================================================================
 
+def IsAutonomous(input_matrix, output_matrix, aut_species, aut_reactions):
+    
+    autonomous_species=True
+    autonomous_reactions=True
+    #n, m =input_matrix.shape
+    for s in aut_species:
+        if sum(input_matrix[s,r] for r in aut_reactions)<0.5 or sum(output_matrix[s,r] for r in aut_reactions)<0.5:
+            #print(s, " is not s-autonomous")
+            autonomous_species=False
+    for r in aut_reactions:
+        if sum(input_matrix[s,r] for s in aut_species)<0.5 or sum(output_matrix[s,r] for s in aut_species)<0.5:
+            #print(r, " is not r-autonomous")
+            autonomous_reactions=False
+
+    return autonomous_species, autonomous_reactions 
+
+
+def CleanData(SM):
+
+    #SM=output_m-input_m
+    n, m =SM.shape
+    #print(n,m)
+    del_c=100
+    del_r=100
+    col_delete=[]
+    row_delete=[]
+    while del_r>0 or del_c>0:
+        del_c=0
+        for  r in range(m):
+            if r not in col_delete and (len([s for s in range(n) if SM[s,r]>=0.5])<0.001 or len([s for s in range(n) if SM[s,r]<=-0.5])<0.001):
+                col_delete.append(r)
+                SM[:, r]=0
+                del_c+=1
+        del_r=0
+        for s in range(n):
+            if s not in row_delete and (len([r for r in range(m) if SM[s,r]>=0.5])<0.001 or len([r for r in range(m) if  SM[s,r]<=-0.5])<0.001):
+                row_delete.append(s)
+                SM[s,:]=0
+                del_r+=1
+
+    n, m =SM.shape
+    input_matrix=np.zeros((n,m))
+    output_matrix=np.zeros((n,m))
+    for s in range(n):
+        for r in range(m):
+            if SM[s,r]>0.5:
+                output_matrix[s,r]=SM[s,r]
+            if SM[s,r]<-0.5:
+                input_matrix[s,r]=-SM[s,r]
+    input_matrix=np.delete(input_matrix, row_delete, 0)
+    output_matrix=np.delete(output_matrix, row_delete, 0)
+    input_matrix=np.delete(input_matrix, col_delete, 1)
+    output_matrix=np.delete(output_matrix, col_delete, 1)
+    #n, m =input_matrix.shape
+    #print(n,m)
+
+    names_rows=[s for s in range(n) if s not in row_delete]
+    names_cols=[r for r in range(m) if r not in col_delete]
+    # print("len_del_c: ", len(col_delete), "len_del_r: ", len(row_delete))
+    # print("len_c:", len(names_cols), "len_r: ", len(names_rows))
+
+    return input_matrix, output_matrix, names_rows, names_cols
 
 # =============================================================================
 def tryGrowthRateGraph(nameScenario):

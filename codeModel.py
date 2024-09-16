@@ -60,8 +60,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
         # --------------------------------------
         # Flows
         x = m.addVars(number_reactions,
-                      lb = 1,
-                      ub = 100000,
+                      lb = 1, ub=1000,
                       name = "x")
         # Rate
         alpha = m.addVar(name = "alpha")
@@ -151,41 +150,36 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     alphaDict = {0: alpha_0}
     previous_alpha = alpha_0
     alpha_t = alpha_0
-    alphaold=gb.GRB.INFINITY
+    alpha_old=0
     # --------------------------------------
 
     start = time.time()
     while stop == False:
         # Solve model
         x_t, alphabar = modelGrowthRateFixed(previous_alpha)
-        print("[%d] alphabar: %.4f, alpha: %.4f"%(step,alphabar,alpha_t))
+        #print("[%d] alphabar: %.4f, alpha: %.4f"%(step,alphabar,alpha_t))
         if len(x_t)==0:
             return [], -1, step, alphaDict, time.time()-start
         else:
             # In case alphabar too little or number of steps larger than maximum,
             # stop
-            if (np.abs(alphabar) < 0.00000001 or
-                step > max_steps or np.abs(alphaold-alphabar)<0.0001):
-                stop = True
-                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
+            alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
                                         for r in reactions)
                                     /
                                     sum(input_matrix[s, r] * x_t[r]
                                         for r in reactions) 
                                     for s in species])
+            if (np.abs(alphabar) < 0.00000001 or
+                step > max_steps or np.abs(alpha_old-alpha_t)<0.0000001):
+                stop = True
+                print(np.abs(alphabar) < 0.00000001, step > max_steps, np.abs(alpha_old-alpha_t)<0.0000001)
                 alphaDict[step] = alpha_t
                 return x_t, alpha_t, step, alphaDict, time.time()-start
             # Otherwise iterate
             else:
-                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
-                                        for r in reactions)
-                                    /
-                                    sum(input_matrix[s, r] * x_t[r]
-                                        for r in reactions) 
-                                    for s in species])
                 alphaDict[step] = alpha_t
+                alpha_old=alpha_t
                 # Initialize next step
-                alphaold=alphabar
                 step += 1
                 previous_alpha = alpha_t
 
@@ -193,7 +187,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
 
 
 # =============================================================================
-def growthRateGraph_a(output_matrix, input_matrix, max_steps):
+def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
 
     # Parameters input
     # ---------------------------
@@ -227,6 +221,7 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
         vector.append(ayuda)
         
     alpha_0 = np.min(vector)
+    
             
 
     # --------------------------------------
@@ -254,6 +249,8 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
         # Objective function
         # --------------------------------------
         m.setObjective(alpha, gb.GRB.MAXIMIZE)
+
+        #m.addConstr(alpha>=0.1)
         # --------------------------------------
     
         # Constraints
@@ -285,7 +282,7 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
             m.addConstr(gb.quicksum(a[s] for s in species if input_matrix[s,r]>0.5)>=1, name="aut_1[%d]"%r)
             m.addConstr(gb.quicksum(a[s] for s in species if output_matrix[s,r]>0.5)>=1, name="aut_2[%d]"%r)
 
-
+        #m.addConstr(gb.quicksum(a[s] for s in species) <= num_a)
         # --------------------------------------
     
         # Gurobi parameters
@@ -346,42 +343,37 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps):
     alphaDict = {0: alpha_0}
     previous_alpha = alpha_0
     alpha_t = alpha_0
-    alphaold=gb.GRB.INFINITY
+    #print("alpha_0: ", alpha_t)
+    alpha_old=0
     # --------------------------------------
 
     start = time.time()
     while stop == False:
         # Solve model
         x_t, alphabar, a_t = modelGrowthRateFixeda(previous_alpha)
-        #print("alphabar: ", alphabar, "alpha: ", alpha_t)
+        #print("alphabar: ", alphabar, "alpha: ", alpha_t, "|a|=", len(a_t))
         if len(x_t)==0:
             return [], -1, step, alphaDict, time.time()-start, []
         else:
             # In case alphabar too little or number of steps larger than maximum,
             # stop
-            if (np.abs(alphabar) < 0.000001 or
-                step > max_steps or np.abs(alphaold-alphabar)<0.0001):
-                stop = True
-                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r]
-                                    for r in reactions)
-                                /
-                                sum(input_matrix[s, r] * x_t[r]
-                                    for r in reactions) 
-                                for s in a_t])
-                #print("alpha_t[%d])%.4f"%(step, alpha_t))
-                alphaDict[step] = alpha_t
-                return x_t, alpha_t, step, alphaDict, time.time()-start, a_t
-            # Otherwise iterate
-            else:
-                alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
+            alpha_t = np.min([sum(output_matrix[s, r] * x_t[r] 
                                     for r in reactions)
                                 /
                                 sum(input_matrix[s, r] * x_t[r] 
                                     for r in reactions) 
                                 for s in a_t])
+            if (np.abs(alphabar) < 0.000001 or
+                step > max_steps or np.abs(alpha_old-alpha_t)<0.000001):
+                stop = True
+                #print("alpha_t[%d])%.4f"%(step, alpha_t))
+                alphaDict[step] = alpha_t
+                return x_t, alpha_t, step, alphaDict, time.time()-start, a_t
+            # Otherwise iterate
+            else:
                 alphaDict[step] = alpha_t
                 # Initialize next step
-                alphaold=alphabar
+                alpha_old=alpha_t
                 step += 1
                 previous_alpha = alpha_t
 
@@ -442,12 +434,11 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
         # -------------------------------------
         m = gb.Model("GR_Model_SN")
         # -------------------------------------
-    
+        print("nR: ", number_reactions)
         # Variables
         # --------------------------------------
         # Flows
         x = m.addVars(number_reactions,
-                          ub = 1000, 
                           name = "x") 
         # Rate
         alpha = m.addVar(name = "alpha") 
@@ -600,11 +591,9 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     alphaDict = {}
     # alphabar = 10000
     alpha = alpha_0
-    alphabarold=gb.GRB.INFINITY
+    alpha_old=0#gb.GRB.INFINITY
     start=time.time()
     while stop == False:
-            
-
         xx, alphabar, aa, yy, zz = modelGrowthRateFixed(alpha)
         alpha = np.min([sum(output_matrix[s, r] * xx[r]
                         for r in reactions)
@@ -612,20 +601,20 @@ def growthRateinSubgraph(output_matrix, input_matrix, t_max):
                         sum(input_matrix[s, r] * xx[r] 
                         for r in reactions) 
                     for s in aa])
-        print("**[%d] alphabar: "%step, alphabar, "alpha: ", alpha, end="") 
-        if alpha>1:
-            print("  AUTOCATALYTIC!")
-        else:
-            print()
+        #print("**[%d] alphabar: "%step, alphabar, "alpha: ", alpha, "|a|=", len(aa), "|z|=", len(zz), end="") 
+        # if alpha>1:
+        #     print("  AUTOCATALYTIC!")
+        # else:
+        #     print()
         if (len(aa) < 1 or 
             (np.abs(alphabar) < 0.0001 or 
-             step > t_max or np.abs(alphabar-alphabarold)<0.00001)):
+             step > t_max or np.abs(alpha-alpha_old)<0.00001)):
             stop = True
             alphaDict[step] = alpha
             return xx, alpha, step, alphaDict, aa, yy, zz, time.time()-start
         else:
             alphaDict[step] = alpha
-            alphabarold=alphabar
+            alpha_old=alpha
             step += 1
 # =============================================================================
 
@@ -836,15 +825,15 @@ def growthRateWithTime(output_matrix, input_matrix, t_max, number_periods):
         # --------------------------------------
         if m.status != gb.GRB.OPTIMAL:
             # st=0
-            m.computeIIS()
+            # m.computeIIS()
             
-            IISfile="inf2.ILP"
-            m.write(IISfile)
+            # IISfile="inf2.ILP"
+            # m.write(IISfile)
                 
-            print("INFEASIBLE!!!!!")
-            with open(IISfile) as f: 
-                for line in f: 
-                    print(line.strip())
+            # print("INFEASIBLE!!!!!")
+            # with open(IISfile) as f: 
+            #     for line in f: 
+            #         print(line.strip())
     
             return [], [], [], [], []
         else:
@@ -1233,7 +1222,5 @@ def growthRateFoodWaste(output_matrix, input_matrix, t_max, number_periods):
             alphaDict[step] = alpha
             step += 1
 # =============================================================================
-    
-
     
 
