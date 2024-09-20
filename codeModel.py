@@ -105,16 +105,16 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
         # --------------------------------------
         m.optimize()
         if m.status != gb.GRB.OPTIMAL:
-            st=0
-            m.computeIIS()
+            # st=0
+            # m.computeIIS()
             
-            IISfile="inf2.ILP"
-            m.write(IISfile)
+            # IISfile="inf2.ILP"
+            # m.write(IISfile)
                 
-            print("INFEASIBLE!!!!!")
-            with open(IISfile) as f: 
-                for line in f: 
-                    print(line.strip())
+            # print("INFEASIBLE!!!!!")
+            # with open(IISfile) as f: 
+            #     for line in f: 
+            #         print(line.strip())
     
             return [], 0
         # --------------------------------------
@@ -157,7 +157,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
     while stop == False:
         # Solve model
         x_t, alphabar = modelGrowthRateFixed(previous_alpha)
-        #print("[%d] alphabar: %.4f, alpha: %.4f"%(step,alphabar,alpha_t))
+        #print("[%d] alphabar: %.4f, alpha: %.8f"%(step,alphabar,alpha_t))
         if len(x_t)==0:
             return [], -1, step, alphaDict, time.time()-start
         else:
@@ -172,7 +172,7 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
             if (np.abs(alphabar) < 0.00000001 or
                 step > max_steps or np.abs(alpha_old-alpha_t)<0.0000001):
                 stop = True
-                print(np.abs(alphabar) < 0.00000001, step > max_steps, np.abs(alpha_old-alpha_t)<0.0000001)
+                #print(np.abs(alphabar) < 0.00000001, step > max_steps, np.abs(alpha_old-alpha_t)<0.0000001)
                 alphaDict[step] = alpha_t
                 return x_t, alpha_t, step, alphaDict, time.time()-start
             # Otherwise iterate
@@ -202,7 +202,7 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
     # Reactions (list)
     reactions = range(number_reactions)
     # Alpha_0 (float)
-    x_0 = np.ones(number_reactions)
+    x_0 = 10*np.ones(number_reactions)
     # alpha_0 = np.min([sum(output_matrix[s, r] * x_0[r] 
     #                      for r in reactions)
     #                  /
@@ -219,7 +219,7 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
             denominador = 0.00000000000001
         ayuda = numerador/denominador
         vector.append(ayuda)
-        
+    #print(vector)
     alpha_0 = np.min(vector)
     
             
@@ -237,13 +237,19 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
         # Variables
         # --------------------------------------
         # Flows
+        UB=1000
         x = m.addVars(number_reactions,
                       lb = 1,
-                      ub = 100000,
+                      ub = UB,
                       name = "x")
         # Rate
         alpha = m.addVar(name = "alpha")
         a = m.addVars(number_species, vtype=gb.GRB.BINARY, name="a")
+        # for s in species:
+        #     if s in [0, 2, 7, 8, 9, 13, 17]:
+        #         a[s].lb=1
+        #     else:
+        #         a[s].ub=0
         # --------------------------------------
     
         # Objective function
@@ -262,18 +268,18 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
         # print(output_matrix.shape)
         
         m.addConstrs(
-            (alpha <= a[s]*gb.quicksum(output_matrix[s, r] * x[r] 
+            (alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
                                   for r in reactions) 
-                     - a[s]*previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
-                                            for r in reactions)
+                     - a[s]*previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] for r in reactions) + UB*(1-a[s])
                      for s in species), "x")
+        
         #
         m.addConstrs(
             (gb.quicksum(input_matrix[s, r] * x[r] 
                          for r in reactions) 
              >= a[s] 
              for s in species), "y")
-        m.addConstr(gb.quicksum(a[s] for s in species)>=1, name="sum_a>=1")
+        m.addConstr(gb.quicksum(a[s] for s in species)>=2, name="suma")
 
         for s in species:
             if sum(output_matrix[s,r] for r in reactions)<0.5 or sum(input_matrix[s,r] for r in reactions)<0.5:
@@ -291,13 +297,15 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
         # m.Params.MIPGap = gap
         # m.Params.TimeLimit = timelimit
         m.Params.OutputFlag = 0
+        m.Params.DualReductions=0
+        #m.write("graph_a.lp")
         # --------------------------------------
     
         # Run model
         # --------------------------------------
         m.optimize()
         if m.status != gb.GRB.OPTIMAL:
-            # st=0
+            print("Status: ", m.status)
             m.computeIIS()
             
             IISfile="infa.ILP"
@@ -351,7 +359,7 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
     while stop == False:
         # Solve model
         x_t, alphabar, a_t = modelGrowthRateFixeda(previous_alpha)
-        #print("alphabar: ", alphabar, "alpha: ", alpha_t, "|a|=", len(a_t))
+        #print("alphabarA: ", alphabar, "alpha: ", alpha_t, "|a|=", len(a_t))
         if len(x_t)==0:
             return [], -1, step, alphaDict, time.time()-start, []
         else:
@@ -363,8 +371,8 @@ def growthRateGraph_a(output_matrix, input_matrix, max_steps, num_a):
                                 sum(input_matrix[s, r] * x_t[r] 
                                     for r in reactions) 
                                 for s in a_t])
-            if (np.abs(alphabar) < 0.000001 or
-                step > max_steps or np.abs(alpha_old-alpha_t)<0.000001):
+            if (np.abs(alphabar) < 0.00001 or
+                step > max_steps or np.abs(alpha_old-alpha_t)<0.00000001):
                 stop = True
                 #print("alpha_t[%d])%.4f"%(step, alpha_t))
                 alphaDict[step] = alpha_t
