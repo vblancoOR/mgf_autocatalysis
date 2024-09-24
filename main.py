@@ -29,7 +29,7 @@ def createScenario(numberSpecies, numberReactions, version):
 def tryGrowthRateGraph(nameScenario):
     
     # =========================================================================
-    def printSolGrowth(output_matrix, input_matrix, x):
+    def printSolGrowth(output_matrix, input_matrix, x, row_mapping):
 
         # Parameters input
         # ---------------------------
@@ -48,59 +48,221 @@ def tryGrowthRateGraph(nameScenario):
                 if input_matrix[i,j] > 0.5:
                     coef = input_matrix[i,j] if input_matrix[i,j] > 1 else ''
                     sg = '+' if sum(ii for ii in species if ii > i and input_matrix[ii, j] > 0) else ''
-                    print("%s s%d %s "%(coef, i+1, sg), end = " ")
-            print ("  -> ", end=" ")
+                    print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+            print ("->", end=" ")
             for i in species:
-                if output_matrix[i, j]>0.5:
-                        coef = output_matrix[i, j] if output_matrix[i, j] > 1 else ''
-                        sg = '+' if sum(ii for ii in species if ii > i and output_matrix[ii, j] > 0) else ''
-                        print("%s s%d %s "%(coef, i+1, sg), end = " ")
+                if output_matrix[i, j] > 0.5:
+                    coef = output_matrix[i, j] if output_matrix[i, j] > 1 else ''
+                    sg = '+' if sum(ii for ii in species if ii > i and output_matrix[ii, j] > 0) else ''
+                    print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
             print("[%f] "%(x[j]))
     # =========================================================================
     
+    # Read scenario
     input_matrix, output_matrix = generator.readScenario(nameScenario)
-
-    MaxIt = 1000
-    x, alpha, step, alphaDict = code.growthRateGraph(output_matrix, input_matrix, MaxIt)
-    print(alpha)
-    if alpha:
-        print("Iterations: ", step, "alpha: ", alpha)
-        alphaList = list(alphaDict.values())
-        plt.scatter(range(len(alphaList)), alphaList)
-        plt.show()
-        printSolGrowth(output_matrix, input_matrix, x)
-        print(np.dot(output_matrix, x)/np.dot(input_matrix, x))
-        stop = 1
-# =============================================================================
-
-
-# =============================================================================
-def tryGrowthRateInSubGraph(nameScenario):
+    # Check autonomy
+    autonomous = aux.checkAutonomy(input_matrix, output_matrix)
+    maxIt = 1000
     
+    # Check if autonomous
+    if autonomous[2] == False:
+        # Remove rows and columns
+        input_modified, output_modified, null_rows, null_columns = aux.removeNullRowsAndColumns(input_matrix, output_matrix, 0.1)
+        # Mapping new rows and columns
+        row_mapping, column_mapping = aux.mappingRowsAndColumns(input_matrix, null_rows, null_columns)
+        # Run algorithm
+        x, alpha, step, alphaDict, time = code.growthRateGraph(output_modified, input_modified, maxIt)
+        print("Número de pasos: ", step)
+        print("Tiempo total: ", time)
+        print("Dimensiones de S: " + str(input_matrix.shape))
+        print("Autonomía S_final: ", aux.checkAutonomy(input_matrix, output_matrix)[2])
+        print("Reacciones S_final: ")
+        printSolGrowth(output_modified, input_modified, x, row_mapping)
+        print("Factor de crecimiento:", alpha)
+        # alphaList = list(alphaDict.values())
+        # plt.scatter(range(len(alphaList)), alphaList)
+        # plt.show()
+    else:
+        # Run algorithm
+        x, alpha, step, alphaDict, time = code.growthRateGraph(output_matrix, input_matrix, maxIt)
+        print("Número de pasos: ", step)
+        print("Tiempo total: ", time)
+        print("Dimensiones de S: " + str(input_matrix.shape))
+        print("Autonomía S_final: ", aux.checkAutonomy(input_matrix, output_matrix)[2])
+        print("Reacciones S_final: ")
+        row_mapping = dict(zip(range(input_matrix.shape[0]), range(input_matrix.shape[0])))
+        printSolGrowth(output_matrix, input_matrix, x, row_mapping)
+        print("Factor de crecimiento:", alpha)            # alphaList = list(alphaDict.values())
+        # plt.scatter(range(len(alphaList)), alphaList)
+        # plt.show()
+        # Define mapping
+# =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+def tryGrowthRateGraphAutocatalytic(nameScenario):
+    
+    # =========================================================================
+    def printSolGrowth(output_matrix, input_matrix, x, row_mapping):
+
+        # Parameters input
+        # ---------------------------
+        # Number Species (int)
+        number_species = output_matrix.shape[0]
+        # Number Reactions (int)
+        number_reactions = output_matrix.shape[1]
+        # Species (list)
+        species = range(number_species)
+        # Reactions (list)
+        reactions = range(number_reactions)
+        # --------------------------------------
+
+        for j in reactions:
+            for i in species:
+                if input_matrix[i,j] > 0.5:
+                    coef = input_matrix[i,j] if input_matrix[i,j] > 1 else ''
+                    sg = '+' if sum(ii for ii in species if ii > i and input_matrix[ii, j] > 0) else ''
+                    print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+            print ("->", end=" ")
+            for i in species:
+                if output_matrix[i, j] > 0.5:
+                    coef = output_matrix[i, j] if output_matrix[i, j] > 1 else ''
+                    sg = '+' if sum(ii for ii in species if ii > i and output_matrix[ii, j] > 0) else ''
+                    print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+            print("[%f] "%(x[j]))
+    # =========================================================================
+    
+    # Read scenario
+    input_matrix, output_matrix = generator.readScenario(nameScenario)
+    # Check autonomy
+    autonomous = aux.checkAutonomy(input_matrix, output_matrix)
+
+    max_steps = 1000
+    
+    num_a = input_matrix.shape[0]
+    
+    # Check if autonomous
+    if autonomous[2] == False:
+        # Remove rows and columns
+        input_modified, output_modified, null_rows, null_columns = aux.removeNullRowsAndColumns(input_matrix, output_matrix, 0.1)
+        # Mapping new rows and columns
+        row_mapping, column_mapping = aux.mappingRowsAndColumns(input_matrix, null_rows, null_columns)
+        # Run algorithm
+        x, alpha, step, alphaDict, time, a_sol = code.growthRateGraphAutocatalytic(output_modified, input_modified, max_steps, num_a)
+        print("Número de pasos: ", step)
+        print("Tiempo total: ", time)
+        print("Dimensiones de S: " + str(input_matrix.shape))
+        print("Autonomía S_final: ", aux.checkAutonomy(input_matrix, output_matrix)[2])
+        print("E. autocataliticas (a): ", end = "")
+        [print("s" + str(i + 1), end = " ") for i in a_sol]
+        print("")
+        print("Reacciones S_final: ")
+        printSolGrowth(output_modified, input_modified, x, row_mapping)
+        print("Factor de crecimiento:", alpha)
+    else:
+        # Run algorithm
+        x, alpha, step, alphaDict, time, a_sol = code.growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a)
+        print("Número de pasos: ", step)
+        print("Tiempo total: ", time)
+        print("Dimensiones de S: " + str(input_matrix.shape))
+        print("Autonomía S: ", aux.checkAutonomy(input_matrix, output_matrix)[2])
+        print("E. autocataliticas (a): ", end = "")
+        [print("s" + str(i + 1), end = " ") for i in a_sol]
+        print("")
+        print("Reacciones S_final: ")
+        row_mapping = dict(zip(range(input_matrix.shape[0]), range(input_matrix.shape[0])))
+        printSolGrowth(output_matrix, input_matrix, x, row_mapping)
+        print("Factor de crecimiento:", alpha)
+# =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+def tryGrowthRateInSubGraph(nameScenario, ayuda):
+    
+    # =========================================================================
+    def printSolGrowth(output_matrix, input_matrix, x, row_mapping, column_mapping):
+
+        # Parameters input
+        # ---------------------------
+        # Number Species (int)
+        number_species = output_matrix.shape[0]
+        # Number Reactions (int)
+        number_reactions = output_matrix.shape[1]
+        # Species (list)
+        species = range(number_species)
+        # Reactions (list)
+        reactions = range(number_reactions)
+        # --------------------------------------
+
+        for j in reactions:
+            for i in species:
+                if input_matrix[i,j] > 0.5:
+                    coef = input_matrix[i,j] if input_matrix[i,j] > 1 else ''
+                    sg = '+' if sum(ii for ii in species if ii > i and input_matrix[ii, j] > 0) else ''
+                    print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+            print ("->", end=" ")
+            for i in row_mapping.keys():
+                if output_matrix[i, j] > 0.5:
+                    coef = output_matrix[i, j] if output_matrix[i, j] > 1 else ''
+                    sg = '+' if sum(ii for ii in species if ii > i and output_matrix[ii, j] > 0) else ''
+                    print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+            print("[%f] "%(x[column_mapping[j]]))
+    # =========================================================================
+
     input_matrix, output_matrix = generator.readScenario(nameScenario)
 
     stoichiometric_matrix = output_matrix - input_matrix
 
-    number_species = stoichiometric_matrix.shape[0]
-    
     ### Construct Subnetwork with maximum Growth Factor:
+    if ayuda == "victor":
+        xx, alpha, t, alphaDict, aa, yy, zz, time = code.growthRateinSubgraphVictor(output_matrix, input_matrix, 10000)
+    elif ayuda == "gabriel":
+        xx, alpha, t, alphaDict, aa, yy, zz= code.growthRateinSubgraphGabriel(output_matrix, input_matrix, 10000)
+    else:
+        xx, alpha, t, alphaDict, aa, yy, zz, time = code.growthRateinSubgraphVersion(output_matrix, input_matrix, 10000)
 
-    xx, alpha, t, alphaDict, aa, yy, zz = code.growthRateinSubgraph(output_matrix, input_matrix, 10000)
 
-    print("S:")
-    print(stoichiometric_matrix)
-    print("Alfa:", alpha)
-    print("Especies (y):", yy)
-    print("E. autocataliticas (a):", aa)
-    print("Reacciones (r):", zz)
-    print("Flujo (x) =", xx)
-    print("t:", t)
-
+    print("Número de pasos: ", t)
+    print("Tiempo total: ", time)
+    print("Dimensiones de S: " + str(stoichiometric_matrix.shape))
+    print("Autonomía S: ", generator.checkAutonomy(input_matrix, output_matrix))
     SSp = output_matrix[yy, :][:, zz]
     SSm = input_matrix[yy, :][:, zz]
-    print("Autonoma:", generator.checkAutonomy(SSp, SSm))
-    print("S_final:")
-    print(SSp - SSm)
+    print("Dimensiones de S_final: " + str((SSp - SSm).shape))
+    print("Autonomía S_final: ", aux.checkAutonomy(SSm, SSp)[2])
+    print("Especies (y): ", end = "")
+    [print("s" + str(i + 1), end = " ") for i in yy]
+    print("")
+    print("E. autocataliticas (a): ", end = "")
+    [print("s" + str(i + 1), end = " ") for i in aa]
+    print("")
+    print("Reacciones S_final: ")
+    number_species = stoichiometric_matrix.shape[0]
+    number_reactions = stoichiometric_matrix.shape[1]
+    especiesNoA = [s for s in range(number_species) if s not in yy]
+    reaccionesNoA = [r for r in range(number_reactions) if r not in zz]
+    row_mapping, column_mapping = aux.mappingRowsAndColumns(input_matrix, especiesNoA, reaccionesNoA)
+    printSolGrowth(SSp, SSm, xx, row_mapping, column_mapping)
+    print("Factor de crecimiento:", alpha)
 # =============================================================================
 
 
@@ -267,7 +429,7 @@ def main():
     # nameScenario = "s4_r4_v0"
     # nameScenario = "s4_r4_v1"
     # nameScenario = "s4_r4_v2"
-    # nameScenario = "s4_r4_v3"
+    nameScenario = "s4_r4_v3"
     # nameScenario = "s4_r4_v4"
     # nameScenario = "s4_r4_v69" # no autocatalytic
     # nameScenario = "s5_r5_v0"
@@ -279,20 +441,25 @@ def main():
     # nameScenario = "s10_r10_v1"
     # nameScenario = "s10_r10_v69" # no autocatalytic
     # nameScenario = "s20_r20_v0" # no autocatalytic
-    nameScenario = "formose" # no autocatalytic
+    # nameScenario = "formose" # no autocatalytic
     # nameScenario = "praful_1" # no autocatalytic
     # nameScenario = "praful_2" # no autocatalytic
 
 
-    number_periods = 3
+    number_periods = 4
     
-    # tryGrowthRateGraph(nameScenario)
+    tryGrowthRateGraph(nameScenario)
     print('----------------------------------')
-    # tryGrowthRateInSubGraph(nameScenario)
+    tryGrowthRateGraphAutocatalytic(nameScenario)
+    print('----------------------------------')
+    # ayuda = "gabriel"
+    # ayuda = "victor"
+    ayuda = "xxx"
+    # tryGrowthRateInSubGraph(nameScenario, ayuda)
     print('----------------------------------')
     # tryGrowthRateInSubGraphWithTime(nameScenario, number_periods)
     print('----------------------------------')
-    tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods)
+    # tryGrowthRateInSubGraphFoodWaste(nameScenario, number_periods)
     print('----------------------------------')
 
 if __name__ == "__main__":
@@ -301,9 +468,6 @@ if __name__ == "__main__":
 
 
 
-
-# s4_r4_v3 2 y 3
-# s9_r9_v0 3
 
 
 

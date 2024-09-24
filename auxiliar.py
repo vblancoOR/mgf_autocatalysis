@@ -594,6 +594,110 @@ def giveMeCoorSubgraph(SubgraphList, center, radius, padding):
     return node_positions
 # =============================================================================
 
+# =============================================================================
+def removeNullRowsAndColumns(matrix1, matrix2, tolerance = 1e-10):
+    
+    # Check if the matrices have the same dimensions
+    if matrix1.shape != matrix2.shape:
+        raise ValueError("Both matrices must have the same dimensions")
+
+    # Initialize lists to store indices of null rows and columns
+    null_rows = []
+    null_columns = []
+
+    rows_to_check = np.arange(matrix1.shape[0])  # Start with all rows
+    columns_to_check = np.arange(matrix1.shape[1])  # Start with all columns
+
+    while True:
+        new_null_rows = []
+        new_null_columns = []
+
+        # Check for null rows in either matrix
+        for i in rows_to_check:
+            if np.all(np.abs(matrix1[i, :]) < tolerance) or np.all(np.abs(matrix2[i, :]) < tolerance):
+                new_null_rows.append(i)
+
+        # Check for null columns in either matrix
+        for j in columns_to_check:
+            if np.all(np.abs(matrix1[:, j]) < tolerance) or np.all(np.abs(matrix2[:, j]) < tolerance):
+                new_null_columns.append(j)
+
+        # If no new null rows or columns are found, we're done
+        if not new_null_rows and not new_null_columns:
+            break
+
+        # Update the lists of null rows and columns
+        null_rows.extend(new_null_rows)
+        null_columns.extend(new_null_columns)
+
+        # Remove new null rows and columns from both matrices
+        matrix1 = np.delete(matrix1, new_null_rows, axis=0)  # Remove null rows
+        matrix1 = np.delete(matrix1, new_null_columns, axis=1)  # Remove null columns
+
+        matrix2 = np.delete(matrix2, new_null_rows, axis=0)  # Remove null rows
+        matrix2 = np.delete(matrix2, new_null_columns, axis=1)  # Remove null columns
+
+        # Update rows and columns to check after the removal
+        rows_to_check = np.arange(matrix1.shape[0])  # Now check the remaining rows
+        columns_to_check = np.arange(matrix1.shape[1])  # Now check the remaining columns
+
+    return matrix1, matrix2, sorted(null_rows), sorted(null_columns)
+# =============================================================================
+
+
+# =============================================================================
+def mappingRowsAndColumns(matrix, rows_to_remove, columns_to_remove):
+    # Create the row mapping from old row indices to new row indices
+    # -----------
+    row_mapping = {}
+    current_row = 0
+    for old_row in range(matrix.shape[0]):
+        if old_row not in rows_to_remove:
+            row_mapping[old_row] = current_row
+            current_row += 1
+    # Reverse the row mapping: new_row -> old_row
+    row_mapping = {new_row: old_row 
+                      for old_row, new_row in row_mapping.items()}
+    # -----------
+
+    # Create the column mapping from old column indices to new column indices
+    # -----------
+    column_mapping = {}
+    current_column = 0
+    for old_column in range(matrix.shape[1]):
+        if old_column not in columns_to_remove:
+            column_mapping[old_column] = current_column
+            current_column += 1
+    # Reverse the row mapping: new_row -> old_row
+    column_mapping = {new_column: old_column 
+                         for old_column, new_column in column_mapping.items()}
+    # -----------
+    return row_mapping, column_mapping
+# =============================================================================
+
+
+
+
+# =============================================================================
+def checkAutonomy(input_matrix, output_matrix):
+    
+    autonomous_species = True
+    autonomous_reactions = True
+    autonomous_general = True
+    
+    for i in range(input_matrix.shape[0]):
+        if sum(input_matrix[i, :]) < 0.5 or sum(output_matrix[i, :]) < 0.5:
+            autonomous_species = False
+            
+    for j in range(input_matrix.shape[1]):
+        if sum(input_matrix[:, j]) < 0.5 or sum(output_matrix[:, j]) < 0.5:
+            autonomous_reactions = False
+
+    if autonomous_species == False or autonomous_reactions == False:
+        autonomous_general = False
+        
+    return autonomous_species, autonomous_reactions, autonomous_general
+# =============================================================================
 
 
 
