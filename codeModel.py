@@ -168,9 +168,6 @@ def growthRateGraph(output_matrix, input_matrix, max_steps):
 
 
 
-
-
-
 # =============================================================================
 def growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a):
 
@@ -213,19 +210,17 @@ def growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a):
     
         # Variables
         # --------------------------------------
+        #
+        upper_bound = 1000
         # Flows
         x = m.addVars(number_reactions,
                       lb = 1,
-                      ub = 1000,
+                      ub = upper_bound,
                       name = "x")
         # Rate
         alpha = m.addVar(name = "alpha")
         # Autocatalytic variable
         a = m.addVars(number_species, vtype = gb.GRB.BINARY, name = "a")
-        #
-        # for s in species:
-        #     if sum(input_matrix[s, :]) < 0.5 or sum(output_matrix[s, :]) < 0.5:
-        #         a[s].ub = 0
         # --------------------------------------
     
         # Objective function
@@ -235,12 +230,23 @@ def growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a):
     
         # Constraints
         # --------------------------------------
+        #
+        # M = previous_alpha * max([sum(input_matrix[s, :]) 
+                        # for s in species]) * upper_bound
+        # # 
+        # m.addConstrs(
+        #     (alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
+        #                           for r in reactions) 
+        #              - previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
+        #                                     for r in reactions) + M*(1 - a[s])
+        #              for s in species), "x")
         # 
         m.addConstrs(
-            (alpha <= a[s]*gb.quicksum(output_matrix[s, r] * x[r] 
+            (alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
                                   for r in reactions) 
-                     - a[s]*previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
-                                            for r in reactions)
+                     - previous_alpha * gb.quicksum(input_matrix[s, r] * x[r] 
+                                            for r in reactions) 
+                     + previous_alpha*sum(input_matrix[s,:])*upper_bound*(1 - a[s])
                      for s in species), "x")
         #
         m.addConstrs(
@@ -248,10 +254,6 @@ def growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a):
                          for r in reactions) 
              >= a[s] 
              for s in species), "y")
-        #
-        # m.addConstr(gb.quicksum(a[s]
-        #                         for s in species) >= 1,
-        #             name = "sum_a >= 1")
         #
         m.addConstrs(
             (gb.quicksum(a[s] for s in species
@@ -316,7 +318,7 @@ def growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a):
     while stop == False:
         # Solve model
         x_t, alphabar, a_t = modelGrowthRateFixeda(previous_alpha)
-        if len(x_t)==0:
+        if len(x_t) == 0:
             return [], -1, step, alphaDict, time.time()-start, []
         else:
             # In case alphabar too little or number of steps larger than maximum,
@@ -347,11 +349,8 @@ def growthRateGraphAutocatalytic(output_matrix, input_matrix, max_steps, num_a):
 
 
 
-
-
-
 # =============================================================================
-def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
+def growthRateinSubgraph(output_matrix, input_matrix, t_max):
     
     # Parameters
     # ---------------------------
@@ -395,9 +394,12 @@ def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
         # Parameters
         # ---------------------------
         #
-        bigM1 = 1000
-        # 
-        bigM2 = 1000
+        upper_bound = 1000
+        #
+        bigM1 = alpha0 * max([sum(input_matrix[s, :]) 
+                        for s in species]) * upper_bound
+        #
+        bigM2 = upper_bound
         # --------------------------------------
     
         # Initialize model
@@ -409,7 +411,9 @@ def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
         # --------------------------------------
         # Flows
         x = m.addVars(number_reactions,
-                          name = "x") 
+                      lb = 0,
+                      ub = upper_bound,
+                      name = "x")
         # Rate
         alpha = m.addVar(name = "alpha") 
         #
@@ -420,9 +424,6 @@ def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
         a = m.addVars(number_species,
                           vtype = gb.GRB.BINARY,
                           name = "a")
-        for s in species:
-            if s not in potential_aut:
-                a[s].ub = 0
         #
         z = m.addVars(number_reactions,
                           vtype = gb.GRB.BINARY,
@@ -436,13 +437,12 @@ def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
     
         # Constraints
         # --------------------------------------
-        #
         m.addConstrs(
             (
             alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
-                                 for r in reactions)
+                                  for r in reactions)
                     - alpha0 * gb.quicksum(input_matrix[s, r] * x[r]
-                                           for r in reactions) + bigM1*(1 - a[s])
+                                            for r in reactions) + bigM1*(1-a[s])
                     for s in species),
             name = "name1")
         #
@@ -461,51 +461,65 @@ def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
                                      or input_matrix[s, r] > 0)) 
              for s in species), 
             name = "name3")
-        #
+
+        # 
         m.addConstrs(
-            (a[s] <= gb.quicksum(z[r] 
-                                 for r in reactions 
-                                 if output_matrix[s,r] > 0.5) 
-             for s in potential_aut), 
+            (y[s] >= z[r] 
+             for r in reactions 
+             for s in species 
+             if (output_matrix[s, r] > 0 
+                 or input_matrix[s, r] > 0)), 
             name = "name4")
         #
         m.addConstrs(
             (a[s] <= gb.quicksum(z[r] 
-                                 for r in reactions
-                                 if input_matrix[s,r] > 0.5) 
+                                 for r in reactions 
+                                 if output_matrix[s,r] >= 1) 
              for s in potential_aut), 
             name = "name5")
         #
         m.addConstrs(
-            (a[s] <= y[s] 
-             for s in species), 
+            (a[s] <= gb.quicksum(z[r] 
+                                 for r in reactions
+                                 if input_matrix[s,r] >= 1) 
+             for s in potential_aut), 
             name = "name6")
         #
         m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in potential_aut
-                                 if output_matrix[s, r] > 0.5) 
-             for r in reactions), 
+            (a[s] <= y[s] 
+             for s in species), 
             name = "name7")
         #
         m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in potential_aut 
-                                 if input_matrix[s, r] > 0.5) 
+            (z[r] <= gb.quicksum(a[s] for s in potential_aut
+                                 if output_matrix[s, r] >= 1) 
              for r in reactions), 
             name = "name8")
         #
         m.addConstrs(
-            (x[r] <= bigM2 * z[r]
+            (z[r] <= gb.quicksum(a[s] for s in potential_aut 
+                                 if input_matrix[s, r] >= 1) 
              for r in reactions), 
             name = "name9")
+        #
+        bigM2 = 2000
+        m.addConstrs(
+            (x[r] <= bigM2 * z[r]
+              for r in reactions), 
+            name = "name10")
         #
         m.addConstrs(
             (z[r] <= x[r] 
              for r in reactions), 
-            name = "name10")
+            name = "name11")
         #   
-        m.addConstr(gb.quicksum(a[s] for s in potential_aut) >= 1, name = "name11")
+        m.addConstr(gb.quicksum(a[s] 
+                                for s in potential_aut) >= 1, 
+                    name = "name12")
         #
-        m.addConstr(gb.quicksum(z[r] for r in reactions) >= 1, name = "name12")
+        m.addConstr(gb.quicksum(z[r] 
+                                for r in reactions) >= 1,
+                    name = "name13")
         # --------------------------------------      
     
         # Gurobi parameters
@@ -577,528 +591,6 @@ def growthRateinSubgraphVictor(output_matrix, input_matrix, t_max):
 
 
 
-
-
-# =============================================================================
-def growthRateinSubgraphVersion(output_matrix, input_matrix, t_max):
-    
-    # Parameters
-    # ---------------------------
-    # Stoichiometric Matrix
-    stoichiometric_matrix = output_matrix - input_matrix
-    # Number Species (int)
-    number_species = stoichiometric_matrix.shape[0]
-    # Number Reactions (int)
-    number_reactions = stoichiometric_matrix.shape[1]
-    # Species (list)
-    species = range(number_species)
-    # Reactions (list)
-    reactions = range(number_reactions)
-    # Potential autocatalytic:
-    potential_aut = [s for s in species 
-                     if (sum(output_matrix[s, :]) > 0.5 
-                         and sum(input_matrix[s, :]) > 0.5)]
-    # Alpha_0 (float)
-    # Initial vector
-    x_0 = np.ones(number_reactions)
-    vector = []
-    for s in potential_aut:
-        numerador = sum(output_matrix[s, r] * x_0[r] 
-                        for r in reactions)
-        denominador = sum(input_matrix[s, r] * x_0[r] 
-                          for r in reactions)
-        if denominador == 0.0:
-            denominador = 0.00000000000001
-        ayuda = numerador/denominador
-        vector.append(ayuda)
-    alpha_0 = np.min(vector)
-    # 
-    if alpha_0 < 0.00001:
-        x_0 = np.random.randint(1, 100, size = number_reactions)
-        #
-        vector = []
-        for s in potential_aut:
-            numerador = sum(output_matrix[s, r] * x_0[r] 
-                            for r in reactions)
-            denominador = sum(input_matrix[s, r] * x_0[r] 
-                              for r in reactions)
-            if denominador == 0.0:
-                denominador = 0.00000000000001
-            ayuda = numerador/denominador
-            vector.append(ayuda)
-        alpha_0 = np.min(vector)
-    # --------------------------------------
-    
-    # =========================================================================
-    def modelGrowthRateFixed(alpha0):
-        
-        # Parameters
-        # ---------------------------
-        #
-        bigM1 = 1000
-        # 
-        bigM2 = 10000
-        # --------------------------------------
-    
-        # Initialize model
-        # -------------------------------------
-        m = gb.Model("GR_Model_SN")
-        # -------------------------------------
-    
-        # Variables
-        # --------------------------------------
-        # Flows
-        x = m.addVars(number_reactions,
-                          name = "x") 
-        # Rate
-        alpha = m.addVar(name = "alpha") 
-        #
-        y = m.addVars(number_species,
-                          vtype = gb.GRB.BINARY,
-                          name = "y")
-        #
-        a = m.addVars(number_species,
-                          vtype = gb.GRB.BINARY,
-                          name = "a")
-        for s in species:
-            if s not in potential_aut:
-                a[s].ub = 0
-        #
-        z = m.addVars(number_reactions,
-                          vtype = gb.GRB.BINARY,
-                          name = "z")
-        # --------------------------------------
-    
-        # Objective function
-        # --------------------------------------      
-        m.setObjective(alpha, gb.GRB.MAXIMIZE)
-        # --------------------------------------      
-
-        # Constraints
-        # --------------------------------------
-        #
-        m.addConstrs(
-            (
-            alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
-                                  for r in reactions)
-                    - alpha0 * gb.quicksum(input_matrix[s, r] * x[r] 
-                                            for r in reactions) 
-                    + bigM1*(1 - a[s])
-                    for s in species),
-            name = "name1")
-        # 
-        m.addConstrs(
-            (gb.quicksum(input_matrix[s, r] * x[r] 
-                          for r in reactions) 
-            >= 1
-            for s in species 
-            if sum(input_matrix[s, :]) >= 1),
-            name = "name2")
-        # 
-        m.addConstrs(
-            (y[s] <= gb.quicksum(z[r] 
-                                  for r in reactions 
-                                  if (output_matrix[s, r] > 0 
-                                      or input_matrix[s, r] > 0)) 
-              for s in species), 
-            name = "name3")
-        # 
-        m.addConstrs(
-            (a[s] <= gb.quicksum(z[r] 
-                                  for r in reactions 
-                                  if output_matrix[s,r] > 0) 
-              for s in potential_aut), 
-            name = "name4")
-        #
-        m.addConstrs(
-            (a[s] <= gb.quicksum(z[r] 
-                                  for r in reactions
-                                  if input_matrix[s,r] > 0) 
-              for s in potential_aut), 
-            name = "name5")
-        #
-        m.addConstrs(
-            (a[s] <= y[s] 
-             for s in species), 
-            name = "name6")
-        #
-        m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in potential_aut
-                                  if output_matrix[s, r] > 0) 
-              for r in reactions), 
-            name = "name7")
-        # 
-        m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in potential_aut
-                                  if input_matrix[s, r] > 0) 
-              for r in reactions), 
-            name = "name8")
-        # 
-        m.addConstrs(
-            (x[r] <= bigM2 * z[r]
-             for r in reactions), 
-            name = "name9")
-        #
-        m.addConstrs(
-            (z[r] <= x[r] 
-             for r in reactions), 
-            name = "name10")
-        #   
-        m.addConstr(gb.quicksum(a[s] 
-                                for s in potential_aut) 
-                    >= 1, 
-                    name = "name11")
-        # 
-        m.addConstr(gb.quicksum(z[r] 
-                                for r in reactions) 
-                    >= 1, 
-                    name = "name12")
-        # --------------------------------------      
-    
-        # Gurobi parameters
-        # --------------------------------------
-        m.Params.OutputFlag = 0
-        # --------------------------------------
-        
-        # Run model
-        # --------------------------------------
-        m.optimize()
-        # --------------------------------------
-    
-        # Result
-        # --------------------------------------
-        if m.status != gb.GRB.OPTIMAL:
-            # st=0
-            m.computeIIS()
-            
-            IISfile="Subgraph_inf2.ILP"
-            m.write(IISfile)
-                
-            print("INFEASIBLE!!!!!")
-            with open(IISfile) as f: 
-                for line in f: 
-                    print(line.strip())
-    
-            return [], 0, [], [], []
-        else:
-            xsol = np.array([x[r].x for r in reactions])
-            alphasol = alpha.x
-            asol = [s for s in species
-                    if a[s].x > 0]
-            ysol = [s for s in species 
-                    if y[s].x > 0]
-            zsol = [r for r in reactions 
-                    if z[r].x > 0]
-    
-            return xsol, alphasol, asol, ysol, zsol
-        # --------------------------------------
-    # =========================================================================
-    # Parameters
-    # --------------------
-    stop = False
-    step = 0
-    alphaDict = {}
-    alpha = alpha_0
-    alpha_old = 0
-    start=time.time()
-    # --------------------
-    while stop == False:
-            
-        xx, alphabar, aa, yy, zz = modelGrowthRateFixed(alpha)
-
-        # ---------------------------------
-        # vector = []
-        # for s in aa:
-        #     numerador = sum(output_matrix[s, r] * xx[r] 
-        #                     for r in reactions)
-        #     denominador = sum(input_matrix[s, r] * xx[r] 
-        #                       for r in reactions)
-        #     if denominador == 0.0:
-        #         denominador = 0.00000000000001
-        #     ayuda = numerador/denominador
-        #     vector.append(ayuda)
-        # alpha_v1 = np.min(vector)
-        # ---------------------------------
-        # ---------------------------------
-        vector = []
-        for a in aa:
-            numerador = sum(output_matrix[a, z] * xx[z] 
-                            for z in zz)
-            denominador = sum(input_matrix[a, z] * xx[z] 
-                              for z in zz)
-            if denominador == 0.0:
-                denominador = 0.00000000000001
-            ayuda = numerador/denominador
-            vector.append(ayuda)
-        alpha_v2 = np.min(vector)
-        # ---------------------------------
-
-
-        alpha = alpha_v2
-
-
-        if (len(aa) < 1 or 
-            (np.abs(alphabar) < 0.0001 
-             or step > t_max 
-             or np.abs(alpha-alpha_old) < 0.00001)):
-            stop = True
-            alphaDict[step] = alpha
-            return xx, alpha, step, alphaDict, aa, yy, zz, time.time()-start
-        else:
-            alphaDict[step] = alpha
-            alpha_old = alpha
-            step += 1
-# =============================================================================
-
-
-# =============================================================================
-def growthRateinSubgraphGabriel(output_matrix, input_matrix, t_max):
-    
-    # Parameters
-    # ---------------------------
-    # Stoichiometric Matrix
-    stoichiometric_matrix = output_matrix - input_matrix
-    # Number Species (int)
-    number_species = stoichiometric_matrix.shape[0]
-    # Number Reactions (int)
-    number_reactions = stoichiometric_matrix.shape[1]
-    # Species (list)
-    species = range(number_species)
-    # Reactions (list)
-    reactions = range(number_reactions)
-    # Alpha_0 (float)
-    x_0 = np.ones(number_reactions)
-
-    vector = []
-    for s in species:
-        numerador = sum(output_matrix[s, r] * x_0[r] 
-                        for r in reactions)
-        denominador = sum(input_matrix[s, r] * x_0[r] 
-                          for r in reactions)
-        if denominador == 0.0:
-            denominador = 0.00000000000001
-        ayuda = numerador/denominador
-        vector.append(ayuda)
-        
-    alpha_0 = np.min(vector)
-    # --------------------------------------
-    
-    # =========================================================================
-    def modelGrowthRateFixed(alpha0):
-        
-        # Parameters
-        # ---------------------------
-        #
-        bigM1 = 1000
-        # 
-        bigM2 = 10000
-        # --------------------------------------
-    
-        # Initialize model
-        # -------------------------------------
-        m = gb.Model("GR_Model_SN")
-        # -------------------------------------
-    
-        # Variables
-        # --------------------------------------
-        # Flows
-        x = m.addVars(number_reactions,
-                          ub = 100000, 
-                          name = "x") 
-        # Rate
-        alpha = m.addVar(name = "alpha") 
-        #
-        y = m.addVars(number_species,
-                          vtype = gb.GRB.BINARY,
-                          name = "y")
-        #
-        a = m.addVars(number_species,
-                          vtype = gb.GRB.BINARY,
-                          name = "a")
-        #
-        z = m.addVars(number_reactions,
-                          vtype = gb.GRB.BINARY,
-                          name = "z")
-        # --------------------------------------
-    
-        # Objective function
-        # --------------------------------------      
-        m.setObjective(alpha, gb.GRB.MAXIMIZE)
-        # --------------------------------------      
-
-        # Constraints
-        # --------------------------------------
-        #
-        m.addConstrs(
-            (
-            alpha <= gb.quicksum(output_matrix[s, r] * x[r] 
-                                 for r in reactions)
-                    - alpha0 * gb.quicksum(input_matrix[s, r] * x[r] 
-                                           for r in reactions) 
-                    for s in species),
-            name = "name1")
-        #
-        m.addConstrs(
-            (gb.quicksum(input_matrix[s, r] * x[r] 
-                         for r in reactions) 
-            >= 1
-            for s in species if sum(abs(input_matrix[s,r]) for r in reactions)>0.01),
-            name = "name2")
-        #
-        m.addConstrs(
-            (y[s] <= gb.quicksum(z[r] 
-                                  for r in reactions 
-                                  if (output_matrix[s, r] > 0 
-                                      or input_matrix[s, r] > 0)) 
-              for s in species), 
-            name = "name3")
-        #
-        m.addConstrs(
-            (a[s] <= gb.quicksum(z[r] 
-                                 for r in reactions 
-                                 if output_matrix[s,r] > 0) 
-             for s in species), 
-            name = "name4")
-        #
-        m.addConstrs(
-            (a[s] <= gb.quicksum(z[r] 
-                                 for r in reactions
-                                 if input_matrix[s,r] > 0) 
-             for s in species), 
-            name = "name5")
-        #
-        m.addConstrs(
-            (a[s] <= y[s] 
-             for s in species), 
-            name = "name6")
-        #
-        m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in species 
-                                 if output_matrix[s, r] > 0) 
-             for r in reactions), 
-            name = "name7")
-        #
-        m.addConstrs(
-            (z[r] <= gb.quicksum(a[s] for s in species 
-                                 if input_matrix[s, r] > 0) 
-             for r in reactions), 
-            name = "name8")
-        #
-        m.addConstrs(
-            (x[r] <= bigM2 * z[r]
-             for r in reactions), 
-            name = "name9")
-        #
-        m.addConstrs(
-            (z[r] <= x[r] 
-             for r in reactions), 
-            name = "name10")
-        #   
-        m.addConstr(gb.quicksum(a[s] 
-                                for s in species) >= 2, name = "name11")
-        #
-        # m.addConstrs(
-        #     (y[s] <= 
-        #      gb.quicksum(z[r] for r in reactions 
-        #                  if input_matrix[s,r] > 0
-        #                  or output_matrix[s, r] > 0)
-        #                  for s in species)
-        #     , name = "xxx")
-        # --------------------------------------      
-    
-        # Gurobi parameters
-        # --------------------------------------
-        m.Params.OutputFlag = 0
-        # --------------------------------------
-        
-        # Run model
-        # --------------------------------------
-        m.optimize()
-        # --------------------------------------
-    
-        # Result
-        # --------------------------------------
-        if m.status != gb.GRB.OPTIMAL:
-            # st=0
-            m.computeIIS()
-            
-            IISfile="Subgraph_inf2.ILP"
-            m.write(IISfile)
-                
-            print("INFEASIBLE!!!!!")
-            with open(IISfile) as f: 
-                for line in f: 
-                    print(line.strip())
-    
-            return [], [], [], [], []
-        else:
-            xsol = np.array([x[r].x for r in reactions])
-            alphasol = alpha.x
-            asol = [s for s in species
-                    if a[s].x > 0]
-            ysol = [s for s in species 
-                    if y[s].x > 0]
-            zsol = [r for r in reactions 
-                    if z[r].x > 0]
-    
-            return xsol, alphasol, asol, ysol, zsol
-        # --------------------------------------
-    # =========================================================================
-       
-    stop = False
-    step = 0
-    alphaDict = {}
-    # alphabar = 10000
-    alpha = alpha_0
-    while stop == False:
-            
-        xx, alphabar, aa, yy, zz = modelGrowthRateFixed(alpha)
-
-        # ---------------------------------
-        vector = []
-        for s in species:
-            numerador = sum(output_matrix[s, r] * xx[r] 
-                            for r in reactions)
-            denominador = sum(input_matrix[s, r] * xx[r] 
-                              for r in reactions)
-            if denominador == 0.0:
-                denominador = 0.00000000000001
-            ayuda = numerador/denominador
-            if ayuda != 0:
-                vector.append(ayuda)
-        alpha_v1 = np.min(vector)
-        # ---------------------------------
-        # ---------------------------------
-        vector = []
-        for a in aa:
-            numerador = sum(output_matrix[a, z] * xx[z] 
-                            for z in zz)
-            denominador = sum(input_matrix[a, z] * xx[z] 
-                              for z in zz)
-            if denominador == 0.0:
-                denominador = 0.00000000000001
-            ayuda = numerador/denominador
-            vector.append(ayuda)
-        alpha_v2 = np.min(vector)
-        # ---------------------------------
-
-        print('xxxxxxxxxxxxxxxxxxxxxxx')
-        print('alpha_v1:' + str(alpha_v1))
-        print('alpha_v2:' + str(alpha_v2))
-        print("El escenario s20_r20_v0 da resultados distintos.")
-        print('xxxxxxxxxxxxxxxxxxxxxxx')
-        alpha = alpha_v2
-
-        if (len(aa) < 1 or 
-            (np.abs(alphabar) < 0.00000001 or 
-             step > t_max)):
-            stop = True
-            alphaDict[step] = alpha
-            return xx, alpha, step, alphaDict, aa, yy, zz
-        else:
-            alphaDict[step] = alpha
-            step += 1
-# =============================================================================
 
 
 

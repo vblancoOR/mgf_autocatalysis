@@ -685,6 +685,7 @@ def checkAutonomy(input_matrix, output_matrix):
     autonomous_reactions = True
     autonomous_general = True
     
+    
     for i in range(input_matrix.shape[0]):
         if sum(input_matrix[i, :]) < 0.5 or sum(output_matrix[i, :]) < 0.5:
             autonomous_species = False

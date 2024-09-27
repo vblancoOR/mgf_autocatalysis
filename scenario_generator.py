@@ -111,55 +111,55 @@ def saveMatrices(mMinus, mPlus, name):
 # =============================================================================
 
 
-# =============================================================================
-def checkAutonomy(output_matrix, input_matrix):
+# # =============================================================================
+# def checkAutonomy(output_matrix, input_matrix):
 
-    # Parameters input
-    # ---------------------------
-    #
-    stoichiometric_matrix = output_matrix - input_matrix
-    #
-    number_species = stoichiometric_matrix.shape[0]
-    #
-    number_reactions = stoichiometric_matrix.shape[1]
-    #
-    species = range(number_species)
-    #
-    reactions = range(number_reactions)
-    # --------------------------------------
+#     # Parameters input
+#     # ---------------------------
+#     #
+#     stoichiometric_matrix = output_matrix - input_matrix
+#     #
+#     number_species = stoichiometric_matrix.shape[0]
+#     #
+#     number_reactions = stoichiometric_matrix.shape[1]
+#     #
+#     species = range(number_species)
+#     #
+#     reactions = range(number_reactions)
+#     # --------------------------------------
     
-    autonomous = True
+#     autonomous = True
 
-    # Check autonomy in species
-    # --------------------------------------
-    for s in species:
-        pos = 0
-        neg = 0
-        for r in reactions:
-            if output_matrix[s, r] > 0.1:
-                pos += 1
-            if input_matrix[s, r] > 0.1:
-                neg += 1
-        if pos == 0 or neg == 0:
-            autonomous = False
-    # --------------------------------------
+#     # Check autonomy in species
+#     # --------------------------------------
+#     for s in species:
+#         pos = 0
+#         neg = 0
+#         for r in reactions:
+#             if output_matrix[s, r] > 0.1:
+#                 pos += 1
+#             if input_matrix[s, r] > 0.1:
+#                 neg += 1
+#         if pos == 0 or neg == 0:
+#             autonomous = False
+#     # --------------------------------------
             
-    # Check autonomy in reactions
-    # --------------------------------------
-    for r in reactions:
-        pos = 0
-        neg = 0
-        for s in species:
-            if output_matrix[s, r] > 0.1:
-                pos += 1
-            if input_matrix[s, r] > 0.1:
-                neg += 1
-        if pos == 0 or neg == 0:
-            autonomous = False
-    # --------------------------------------
+#     # Check autonomy in reactions
+#     # --------------------------------------
+#     for r in reactions:
+#         pos = 0
+#         neg = 0
+#         for s in species:
+#             if output_matrix[s, r] > 0.1:
+#                 pos += 1
+#             if input_matrix[s, r] > 0.1:
+#                 neg += 1
+#         if pos == 0 or neg == 0:
+#             autonomous = False
+#     # --------------------------------------
 
-    return autonomous 
-# =============================================================================
+#     return autonomous 
+# # =============================================================================
 
 
 # =============================================================================
@@ -204,6 +204,54 @@ def transformStoichiometricIntoInputAndOuput(path, name):
 # =============================================================================
 
 
+
+# =============================================================================
+def generadorEscenario(numero_filas, numero_columnas, factor_de_densidad, version, valor_maximo):
+    # Función crea pares para matriz de inputs
+    # -----------------------------------------------------------------------------
+    def genPairs(numero_filas, numero_columnas, N):
+        L = set()
+        i, j = np.random.randint(0, numero_filas), np.random.randint(0, numero_columnas)
+        L.add((i, j))
+        while len(L) < N:
+            while (i, j) in L:
+                i, j = np.random.randint(0, numero_filas), np.random.randint(0, numero_columnas)
+            L.add((i,j))
+        return L
+    # -----------------------------------------------------------------------------
+    # Función crea pares para matriz de outputs
+    # -----------------------------------------------------------------------------
+    def genPairsNotInL(numero_filas, numero_columnas, N, LL):
+        L = set()
+        i, j = np.random.randint(0, numero_filas), np.random.randint(0, numero_columnas)
+        if (i, j) not in LL:
+            L.add((i, j))
+        while len(L) < N:
+            while (i, j) in L or (i,j) in LL:
+                i, j = np.random.randint(0, numero_filas), np.random.randint(0, numero_columnas)
+            L.add((i,j))
+        return L
+    # -----------------------------------------------------------------------------
+    # Matriz aleatoria
+    matrix = np.random.randint(0, valor_maximo, size=(numero_filas, numero_columnas))
+    # Pares inputs
+    pairs1 = genPairs(numero_filas, numero_columnas, numero_filas*numero_columnas/factor_de_densidad)
+    # Pares outputs
+    pairs2 = genPairsNotInL(numero_filas, numero_columnas, numero_filas*numero_columnas/factor_de_densidad, pairs1)
+    # Inicialización de matrices
+    output_matrix = np.zeros((numero_filas, numero_columnas))
+    input_matrix = np.zeros((numero_filas, numero_columnas))
+    # Rellenar las matrices
+    for i in range(numero_filas):
+        for j in range(numero_columnas):
+            if (i, j) in pairs1:
+                input_matrix[i, j] = matrix[i, j]
+            elif (i, j) in pairs2:
+                output_matrix[i, j] = matrix[i, j]
+    # Guardar matrices
+    np.savetxt("instances/left_n%dm%dd%d_%d.txt"%(numero_filas, numero_columnas, factor_de_densidad, version), input_matrix, fmt = "%d")
+    np.savetxt("instances/right_n%dm%dd%d_%d.txt"%(numero_filas, numero_columnas, factor_de_densidad, version), output_matrix, fmt = "%d")
+# =============================================================================
 
 
 
