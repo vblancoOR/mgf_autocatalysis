@@ -702,3 +702,124 @@ def checkAutonomy(input_matrix, output_matrix):
 
 
 
+
+
+
+
+
+# =========================================================================
+def printReactions(output_matrix, input_matrix, x, row_mapping, column_mapping):
+
+    # Parameters input
+    # ---------------------------
+    # Number Species (int)
+    number_species = output_matrix.shape[0]
+    # Number Reactions (int)
+    number_reactions = output_matrix.shape[1]
+    # Species (list)
+    species = range(number_species)
+    # Reactions (list)
+    reactions = range(number_reactions)
+    # --------------------------------------
+
+    for j in reactions:
+        for i in species:
+            if input_matrix[i,j] > 0.5:
+                coef = input_matrix[i,j] if input_matrix[i,j] > 1 else ''
+                sg = '+' if sum(ii for ii in species if ii > i and input_matrix[ii, j] > 0) else ''
+                print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+        print ("->", end=" ")
+        for i in species:
+            if output_matrix[i, j] > 0.5:
+                coef = output_matrix[i, j] if output_matrix[i, j] > 1 else ''
+                sg = '+' if sum(ii for ii in species if ii > i and output_matrix[ii, j] > 0) else ''
+                print("%ss%d %s"%(coef, row_mapping[i] + 1, sg), end = " ")
+        print("[%f] "%(x[column_mapping[j]]))
+# =========================================================================
+
+
+# =========================================================================
+def recordReactions(output_matrix, input_matrix, x, row_mapping, column_mapping):
+    # Parameters input
+    # ---------------------------
+    # Number Species (int)
+    number_species = output_matrix.shape[0]
+    # Number Reactions (int)
+    number_reactions = output_matrix.shape[1]
+    # Species (list)
+    species = range(number_species)
+    # Reactions (list)
+    reactions = range(number_reactions)
+    # --------------------------------------
+    cadenas = []
+    for j in reactions:
+        cadena = ""
+        for i in species:
+            if input_matrix[i,j] > 0.5:
+                coef = input_matrix[i,j] if input_matrix[i,j] > 1 else ''
+                sg = '+' if sum(ii for ii in species if ii > i and input_matrix[ii, j] > 0) else ''
+                if sg == "+":
+                    str1 = str(coef) + "s" + str(row_mapping[i] + 1) + " " + str(sg) + " "
+                else:
+                    str1 = str(coef) + "s" + str(row_mapping[i] + 1) + " " + str(sg)
+                cadena += str1
+        cadena += "-> "
+        for i in species:
+            if output_matrix[i, j] > 0.5:
+                coef = output_matrix[i, j] if output_matrix[i, j] > 1 else ''
+                sg = '+' if sum(ii for ii in species if ii > i and output_matrix[ii, j] > 0) else ''
+                if sg == "+":
+                    str2 = str(coef) + "s" + str(row_mapping[i] + 1) + " " + str(sg) + " "
+                else:
+                    str2 = str(coef) + "s" + str(row_mapping[i] + 1) + " " + str(sg)                    
+                cadena += str2
+        cadena += str([x[column_mapping[j]]])
+        cadena += '\n'
+        cadenas.append(cadena)
+    return cadenas
+# =========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -249,8 +249,8 @@ def generadorEscenario(numero_filas, numero_columnas, factor_de_densidad, versio
             elif (i, j) in pairs2:
                 output_matrix[i, j] = matrix[i, j]
     # Guardar matrices
-    np.savetxt("instances/left_n%dm%dd%d_%d.txt"%(numero_filas, numero_columnas, factor_de_densidad, version), input_matrix, fmt = "%d")
-    np.savetxt("instances/right_n%dm%dd%d_%d.txt"%(numero_filas, numero_columnas, factor_de_densidad, version), output_matrix, fmt = "%d")
+    np.savetxt("scenarios/n%dm%dd%dmax%dv%d_minus.txt"%(numero_filas, numero_columnas, factor_de_densidad, valor_maximo, version), input_matrix, fmt = "%d")
+    np.savetxt("scenarios/n%dm%dd%dmax%dv%d_plus.txt"%(numero_filas, numero_columnas, factor_de_densidad, valor_maximo, version), output_matrix, fmt = "%d")
 # =============================================================================
 
 
